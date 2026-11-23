@@ -39,3 +39,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# keep the example, ignore the real ones
+!.env.example
+
+# personal Claude Code permissions
+/.claude/settings.local.json
+
+# Atlas credentials file (never commit)
+atlas-credentials.env
+*.env
+!.env.example

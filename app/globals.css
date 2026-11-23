@@ -1,26 +1,172 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Dark variant follows the <meta name="color-scheme"> override, else the OS. */
+@custom-variant dark {
+  &:where(:root:has(> head > meta[name="color-scheme"][content="dark"]) *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(:root:not(:has(> head > meta[name="color-scheme"][content="light"])) *) {
+      @slot;
+    }
+  }
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-sans);
+  --font-heading: var(--font-sans);
+  --font-display: var(--font-inter-tight);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-lime: var(--lime);
+  --color-lime-foreground: var(--lime-foreground);
+  --color-income: var(--income);
+  --color-expense: var(--expense);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --shadow-card: 0 6px 28px -14px rgb(0 0 0 / 0.22), 0 1px 2px rgb(0 0 0 / 0.04);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  color-scheme: light dark;
+
+  &:has(> head > meta[name="color-scheme"][content="dark"]) {
+    color-scheme: dark;
+  }
+  &:has(> head > meta[name="color-scheme"][content="light"]) {
+    color-scheme: light;
+  }
+
+  --background: light-dark(oklch(0.985 0.002 10), oklch(0.165 0.01 10));
+  --foreground: light-dark(oklch(0.2 0.03 265), oklch(0.96 0.005 10));
+  --card: light-dark(oklch(1 0 0), oklch(0.215 0.012 10));
+  --card-foreground: var(--foreground);
+  --popover: light-dark(oklch(1 0 0), oklch(0.235 0.014 10));
+  --popover-foreground: var(--foreground);
+  --primary: light-dark(oklch(0.655 0.235 7), oklch(0.72 0.2 8));
+  --primary-foreground: light-dark(oklch(1 0 0), oklch(0.2 0.05 8));
+  --secondary: light-dark(oklch(0.96 0.004 10), oklch(0.27 0.012 10));
+  --secondary-foreground: light-dark(oklch(0.25 0.03 265), oklch(0.93 0.01 10));
+  --muted: light-dark(oklch(0.96 0.004 10), oklch(0.265 0.012 10));
+  --muted-foreground: light-dark(oklch(0.55 0.02 265), oklch(0.72 0.02 10));
+  --accent: light-dark(oklch(0.965 0.025 7), oklch(0.3 0.06 8));
+  --accent-foreground: light-dark(oklch(0.5 0.21 8), oklch(0.92 0.06 8));
+  --destructive: light-dark(oklch(0.6 0.235 27), oklch(0.7 0.19 25));
+  --border: light-dark(oklch(0.93 0.004 10), oklch(1 0 0 / 10%));
+  --input: light-dark(oklch(0.91 0.004 10), oklch(1 0 0 / 14%));
+  --ring: light-dark(oklch(0.7 0.2 7), oklch(0.75 0.17 8));
+  --lime: light-dark(oklch(0.93 0.05 7), oklch(0.36 0.09 8));
+  --lime-foreground: light-dark(oklch(0.52 0.22 8), oklch(0.9 0.08 8));
+  --income: light-dark(oklch(0.7 0.19 148), oklch(0.8 0.18 148));
+  --expense: light-dark(oklch(0.6 0.235 27), oklch(0.72 0.18 25));
+  --chart-1: light-dark(oklch(0.68 0.18 148), oklch(0.8 0.17 148));
+  --chart-2: light-dark(oklch(0.82 0.16 90), oklch(0.82 0.15 85));
+  --chart-3: light-dark(oklch(0.65 0.235 7), oklch(0.74 0.17 8));
+  --chart-4: light-dark(oklch(0.68 0.15 235), oklch(0.76 0.12 235));
+  --chart-5: light-dark(oklch(0.58 0.17 305), oklch(0.74 0.14 305));
+  --radius: 0.875rem;
+
+  --target-size: 24px;
+  @media (pointer: coarse) {
+    --target-size: 44px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Desktop reads better a notch smaller: everything is rem-based, so this scales it all. */
+@media (min-width: 1024px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    scroll-padding-bottom: calc(6rem + env(safe-area-inset-bottom, 0px));
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-background text-foreground;
+    overflow-wrap: break-word;
+  }
+  h1, h2, h3 {
+    text-wrap: balance;
+    font-family: var(--font-display), var(--font-sans);
+    letter-spacing: -0.025em;
+  }
+  p, li {
+    text-wrap: pretty;
+  }
+  button:not(:disabled), [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  :where(button, select, textarea, input:not([type="checkbox"], [type="radio"]), [role="button"], a[data-nav]) {
+    min-block-size: var(--target-size);
+  }
+}
+
+/* Numbers: tight, tall, proportional digits (Inter Tight). */
+@utility money {
+  font-family: var(--font-display), var(--font-sans);
+  font-variant-numeric: proportional-nums;
+  font-feature-settings: "tnum" 0;
+  letter-spacing: -0.015em;
+}
+
+/* Big hero numbers: tighter again. */
+@utility money-lg {
+  font-family: var(--font-display), var(--font-sans);
+  font-variant-numeric: proportional-nums;
+  font-feature-settings: "tnum" 0;
+  letter-spacing: -0.045em;
+}
+
+@utility pb-safe {
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
+}
+
+/* Toasts: green for success, red for errors (text, icon and border). */
+[data-sonner-toast][data-type="success"] {
+  --normal-border: light-dark(oklch(0.72 0.17 148), oklch(0.7 0.16 148));
+  --normal-text: light-dark(oklch(0.45 0.15 148), oklch(0.85 0.16 148));
+}
+[data-sonner-toast][data-type="error"] {
+  --normal-border: light-dark(oklch(0.7 0.2 25), oklch(0.65 0.18 25));
+  --normal-text: light-dark(oklch(0.5 0.2 25), oklch(0.8 0.15 25));
+}
+[data-sonner-toast][data-type="success"],
+[data-sonner-toast][data-type="error"] {
+  border-width: 1.5px;
+  font-weight: 600;
 }
