@@ -63,7 +63,7 @@ export function PageHeader({
             </Link>
           </Button>
         ) : null}
-        <h1 className="min-w-0 flex-1 truncate text-2xl font-extrabold tracking-tight lg:text-3xl">
+        <h1 className="min-w-0 flex-1 truncate text-xl font-extrabold tracking-tight md:text-2xl lg:text-3xl">
           {title}
         </h1>
         {action}

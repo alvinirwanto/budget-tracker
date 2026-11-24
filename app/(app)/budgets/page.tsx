@@ -78,7 +78,7 @@ export default function BudgetsPage() {
                   </div>
 
                   <div className="mt-7">
-                    <p className={cn("money-lg text-4xl font-bold", over && "text-expense")}>
+                    <p className={cn("money-lg text-3xl md:text-4xl font-bold", over && "text-expense")}>
                       {formatIDR(s.remaining)}
                     </p>
                     <p data-fit className="mt-2 text-sm text-muted-foreground">

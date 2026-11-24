@@ -119,7 +119,7 @@ function HomeView({ state }: { state: AppState }) {
             </h2>
             <NotificationBell state={state} />
           </div>
-          <p className="money-lg text-5xl leading-none font-bold md:text-6xl">{formatIDR(total)}</p>
+          <p className="money-lg text-4xl leading-none font-bold md:text-6xl">{formatIDR(total)}</p>
 
           <div
             role="img"
@@ -336,7 +336,7 @@ function HomeView({ state }: { state: AppState }) {
               Statistics <CaretRightIcon className="size-4" />
             </Link>
           </div>
-          <p className="money-lg text-4xl font-bold">{formatIDR(sum.expense)}</p>
+          <p className="money-lg text-3xl md:text-4xl font-bold">{formatIDR(sum.expense)}</p>
           {delta !== null ? (
             <p
               className={cn(

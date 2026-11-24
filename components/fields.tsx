@@ -1,10 +1,10 @@
 "use client";
 
-import { useId, type ReactNode } from "react";
+import { useId, useLayoutEffect, useRef, type ReactNode } from "react";
 import { MoneyText } from "@/components/money-text";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { formatNumber, parseDigits } from "@/lib/format";
+import { formatNumber } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 export function Field({
@@ -59,6 +59,19 @@ export function MoneyInput({
   hero?: boolean;
 }) {
   const auto = useId();
+  const ref = useRef<HTMLInputElement>(null);
+  // How many digits sit left of the caret. Re-formatting adds dots, so the caret is put back by digit count.
+  const digitsBeforeCaret = useRef<number | null>(null);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    const n = digitsBeforeCaret.current;
+    if (!el || n === null) return;
+    digitsBeforeCaret.current = null;
+    let pos = 0;
+    let seen = 0;
+    while (pos < el.value.length && seen < n) if (/\d/.test(el.value[pos++])) seen++;
+    if (document.activeElement === el) el.setSelectionRange(pos, pos);
+  });
   return (
     <div className="relative">
       <span
@@ -71,20 +84,33 @@ export function MoneyInput({
         Rp
       </span>
       <Input
+        ref={ref}
         id={id ?? auto}
         inputMode="numeric"
+        pattern="[0-9]*"
+        enterKeyHint="done"
         autoComplete="off"
         aria-invalid={invalid || undefined}
         placeholder={placeholder}
         value={value ? formatNumber(value) : ""}
         onChange={(e) => {
-          const n = parseDigits(e.target.value);
-          onChange(n === 0 && e.target.value === "" ? undefined : n);
+          const el = e.target;
+          const before = value ? String(value) : "";
+          let digits = el.value.replace(/\D/g, "");
+          let caret = el.value.slice(0, el.selectionStart ?? el.value.length).replace(/\D/g, "").length;
+          // Backspace on a dot changes no digit. Remove the digit before the dot instead, so it never gets stuck.
+          if (digits === before && el.value.length < (value ? formatNumber(value).length : 0) && caret > 0) {
+            digits = digits.slice(0, caret - 1) + digits.slice(caret);
+            caret -= 1;
+          }
+          digitsBeforeCaret.current = caret;
+          // Empty is 0 (never undefined): the form would put its default value back and the deleted number would reappear.
+          onChange(digits ? Number(digits) : 0);
         }}
         className={cn(
           "money",
           hero
-            ? "money-lg h-16 rounded-2xl border-2 bg-accent/40 pl-14 text-3xl font-bold md:text-3xl focus-visible:border-primary"
+            ? "money-lg h-14 rounded-2xl border-2 bg-accent/40 pl-12 text-2xl font-bold md:h-16 md:pl-14 md:text-3xl focus-visible:border-primary"
             : "pl-11",
           className,
         )}
