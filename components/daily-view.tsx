@@ -144,8 +144,8 @@ export function DailyView({ state }: { state: AppState }) {
               })}
             </ul>
             <div className="flex items-center justify-between gap-3 border-t py-4">
-              <span className="text-muted-foreground">Total</span>
-              <span className={cn("money text-lg font-extrabold", total < 0 && "text-expense")}>
+              <span className="shrink-0 text-muted-foreground">Total</span>
+              <span className={cn("money min-w-0 flex-1 text-right text-lg font-extrabold", total < 0 && "text-expense")}>
                 {formatIDR(total)}
               </span>
             </div>

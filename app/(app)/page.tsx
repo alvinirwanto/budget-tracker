@@ -15,6 +15,7 @@ import {
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Card, EmptyState, PageHeader, SectionTitle, Skeleton } from "@/components/page-bits";
+import { MoneyText } from "@/components/money-text";
 import { NotificationBell } from "@/components/notification-bell";
 import { PocketCard } from "@/components/pocket-card";
 import { Segmented } from "@/components/segmented";
@@ -91,8 +92,8 @@ function HomeView({ state }: { state: AppState }) {
 
   return (
     <div className="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-12 lg:gap-6">
-      <div className="lg:col-span-12">
-        <PageHeader
+      <PageHeader
+          className="lg:col-span-12"
           title="Overview"
           action={
             <div className="flex gap-2">
@@ -109,7 +110,6 @@ function HomeView({ state }: { state: AppState }) {
             </div>
           }
         />
-      </div>
 
       <div className="grid content-start gap-6 lg:col-span-8">
         <Card as="section" aria-label="Balance" className="grid gap-5 md:p-6">
@@ -133,14 +133,14 @@ function HomeView({ state }: { state: AppState }) {
           <ul className="grid gap-3 text-sm">
             <li className="flex items-center gap-2.5">
               <i aria-hidden className="size-2.5 rounded-full bg-primary" />
-              <span className="text-muted-foreground">Spendable</span>
-              <span className="money ml-auto text-base font-bold">{formatIDR(total - assets)}</span>
+              <span className="shrink-0 text-muted-foreground">Spendable</span>
+              <span className="money ml-auto min-w-0 flex-1 text-right text-base font-bold">{formatIDR(total - assets)}</span>
             </li>
             {assets > 0 && (
               <li className="flex items-center gap-2.5">
                 <i aria-hidden className="size-2.5 rounded-full bg-amber-400" />
-                <span className="text-muted-foreground">Gold &amp; assets</span>
-                <span className="money ml-auto text-base font-bold">{formatIDR(assets)}</span>
+                <span className="shrink-0 text-muted-foreground">Gold &amp; assets</span>
+                <span className="money ml-auto min-w-0 flex-1 text-right text-base font-bold">{formatIDR(assets)}</span>
               </li>
             )}
           </ul>
@@ -217,12 +217,12 @@ function HomeView({ state }: { state: AppState }) {
           <h2 className="flex items-center gap-2 font-bold">
             <LightbulbIcon className="size-5 text-muted-foreground" weight="duotone" /> Insight
           </h2>
-          <p className="text-sm leading-relaxed text-muted-foreground">
+          <p data-fit="2" className="text-sm leading-relaxed text-muted-foreground">
             {week.income === 0 && week.expense === 0
               ? "Nothing recorded this week yet."
               : weekNet >= 0
-                ? `You saved ${formatIDR(weekNet)} this week`
-                : `You spent ${formatIDR(-weekNet)} more than you earned this week`}
+                ? <MoneyText>{`You saved ${formatIDR(weekNet)} this week`}</MoneyText>
+                : <MoneyText>{`You spent ${formatIDR(-weekNet)} more than you earned this week`}</MoneyText>}
           </p>
           <div className="flex items-center gap-3 rounded-2xl bg-accent p-4 text-accent-foreground">
             <CalendarDotsIcon className="size-9 shrink-0 text-primary" weight="duotone" />
@@ -248,7 +248,7 @@ function HomeView({ state }: { state: AppState }) {
         >
           Pockets
         </SectionTitle>
-        <ul className="-mx-5 flex snap-x snap-mandatory scroll-px-5 gap-3 overflow-x-auto px-5 pb-1 [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-4 md:overflow-visible md:px-0 xl:grid-cols-5">
+        <ul className="-mx-5 flex snap-x snap-mandatory scroll-px-5 gap-3 overflow-x-auto px-5 py-1.5 [scrollbar-width:none] max-md:-my-1.5 md:mx-0 md:grid md:grid-cols-4 md:overflow-visible md:px-0 xl:grid-cols-5">
           {state.pockets.map((p) => (
             <li key={p.id} className="snap-start">
               <PocketCard pocket={p} balance={balances.get(p.id) ?? 0} />
@@ -272,7 +272,9 @@ function HomeView({ state }: { state: AppState }) {
                 over={budgetSummary.remaining < 0}
                 label="Budget remaining"
               >
-                <span className="text-[10px] font-semibold text-muted-foreground">left</span>
+                <span className={cn("money text-base font-bold", budgetSummary.remaining < 0 && "text-expense")}>
+                  {Math.round((budgetSummary.remaining / budget.total) * 100)}%
+                </span>
               </Ring>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-semibold text-muted-foreground">{budget.name}</p>
@@ -284,9 +286,10 @@ function HomeView({ state }: { state: AppState }) {
                 >
                   {formatIDR(budgetSummary.remaining)}
                 </p>
-                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                  of {formatIDR(budget.total)} · {budgetSummary.daysLeft} day
-                  {budgetSummary.daysLeft === 1 ? "" : "s"} left
+                <p data-fit className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                  <MoneyText>
+                    {`of ${formatIDR(budget.total)} · ${budgetSummary.daysLeft} day${budgetSummary.daysLeft === 1 ? "" : "s"} left`}
+                  </MoneyText>
                 </p>
               </div>
               <CaretRightIcon className="size-5 shrink-0 text-muted-foreground" />
@@ -408,8 +411,8 @@ function TotalRow({
         className="flex min-h-16 items-center gap-3 focus-visible:outline-3 focus-visible:outline-ring"
       >
         <i aria-hidden className={cn("size-2.5 rounded-full", dot)} />
-        <span className="flex-1 font-semibold">{label}</span>
-        <span className={cn("money font-bold", negative && "text-expense")}>{formatIDR(amount)}</span>
+        <span className="shrink-0 font-semibold">{label}</span>
+        <span className={cn("money min-w-0 flex-1 text-right font-bold", negative && "text-expense")}>{formatIDR(amount)}</span>
         <CaretRightIcon className="size-4 text-muted-foreground" />
       </Link>
     </li>
@@ -429,9 +432,9 @@ function CompareBar({
 }) {
   return (
     <div className="grid gap-1">
-      <div className="flex justify-between text-xs">
-        <span className="text-muted-foreground">{label}</span>
-        <span className="money font-semibold">{formatIDR(value)}</span>
+      <div className="flex justify-between gap-2 text-xs">
+        <span className="shrink-0 text-muted-foreground">{label}</span>
+        <span className="money min-w-0 flex-1 text-right font-semibold">{formatIDR(value)}</span>
       </div>
       <Progress value={max ? value / max : 0} color={muted ? "var(--lime)" : "var(--primary)"} />
     </div>
@@ -452,9 +455,9 @@ function CategoryRow({
     <li className="flex items-center gap-3">
       <CategoryBadge category={category} size="sm" />
       <div className="grid min-w-0 flex-1 gap-1.5">
-        <div className="flex items-baseline justify-between gap-2">
-          <span className="truncate text-sm font-semibold">{category?.name ?? "Uncategorized"}</span>
-          <span className="money text-sm font-bold">{formatIDR(amount)}</span>
+        <div className="flex items-center justify-between gap-2">
+          <span className="min-w-0 truncate text-sm font-semibold">{category?.name ?? "Uncategorized"}</span>
+          <span className="money max-w-[60%] shrink-0 text-sm font-bold">{formatIDR(amount)}</span>
         </div>
         <Progress value={share} color={color} />
       </div>

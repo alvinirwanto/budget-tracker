@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { EmptyState, PageHeader, Skeleton } from "@/components/page-bits";
+import { MoneyText } from "@/components/money-text";
 import { PocketCard } from "@/components/pocket-card";
 import { PocketForm } from "@/components/pocket-form";
 import { Sheet } from "@/components/sheet";
@@ -28,7 +29,7 @@ export default function PocketsPage() {
       <PageHeader
         title="Pockets"
         back="/profile"
-        subtitle={`${formatIDR(total)} in total`}
+        subtitle={<MoneyText>{`${formatIDR(total)} in total`}</MoneyText>}
         action={
           <Button
             className="h-11 rounded-full px-4 font-bold"
@@ -59,7 +60,7 @@ export default function PocketsPage() {
                 className="block h-full w-full rounded-2xl text-left focus-visible:outline-3 focus-visible:outline-ring"
                 aria-label={`Edit ${p.name}, ${formatIDR(balances.get(p.id) ?? 0)}`}
               >
-                <PocketCard pocket={p} balance={balances.get(p.id) ?? 0} className="h-full" />
+                <PocketCard pocket={p} balance={balances.get(p.id) ?? 0} className="h-full w-full" />
               </button>
             </li>
           ))}

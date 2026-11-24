@@ -29,7 +29,7 @@ export function Amount({ t, className }: { t: Transaction; className?: string })
   return (
     <span
       className={cn(
-        "money whitespace-nowrap font-bold",
+        "money max-w-[55%] whitespace-nowrap font-bold",
         t.type === "income" && "text-income",
         t.type === "expense" && "text-foreground",
         t.type === "transfer" && "text-muted-foreground",

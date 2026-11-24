@@ -33,14 +33,26 @@ export function PageHeader({
   back,
   action,
   subtitle,
+  tabs,
+  className,
 }: {
   title: string;
   back?: string;
   action?: ReactNode;
-  subtitle?: string;
+  subtitle?: ReactNode;
+  /** Tab switch. It sits in the sticky header, so it stays at the top with the title. */
+  tabs?: ReactNode;
+  className?: string;
 }) {
   return (
-    <header className="-mb-2 grid gap-1">
+    <header
+      className={cn(
+        // Sticks to the top. It reaches the page edges and sits under the phone notch, and the negative
+        // margins cancel its padding so nothing moves when it is not stuck.
+        "sticky top-0 z-30 -mx-5 -mt-[calc(env(safe-area-inset-top)+1rem)] -mb-5 grid gap-1 bg-background/90 px-5 pt-[calc(env(safe-area-inset-top)+1rem)] pb-3 backdrop-blur-md md:-mx-8 md:px-8 lg:-mx-10 lg:px-10",
+        className,
+      )}
+    >
       <div className="flex min-h-11 items-center gap-3">
         {back === "history" ? (
           <BackButton />
@@ -57,8 +69,9 @@ export function PageHeader({
         {action}
       </div>
       {subtitle && (
-        <p className={cn("text-sm text-muted-foreground", back && "pl-14")}>{subtitle}</p>
+        <p data-fit className={cn("-mt-1.5 mb-1.5 text-sm text-muted-foreground", back && "pl-14")}>{subtitle}</p>
       )}
+      {tabs && <div className="mt-3 mb-2">{tabs}</div>}
     </header>
   );
 }

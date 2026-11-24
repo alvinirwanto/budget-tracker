@@ -35,9 +35,7 @@ export default function ProfilePage() {
 
   return (
     <div className="grid gap-6 md:grid-cols-2 md:items-start md:gap-x-6">
-      <div className="md:col-span-2">
-        <PageHeader title="Profile" />
-      </div>
+      <PageHeader className="md:col-span-2" title="Profile" />
 
       <AccountCard />
 
@@ -117,6 +115,7 @@ export default function ProfilePage() {
             : "Your current pockets, transactions and budgets are replaced by an example set."
         }
         confirmLabel={confirm === "reset" ? "Erase" : "Load sample"}
+        confirmText={state.user?.email}
         onConfirm={() => {
           if (confirm === "reset") actions.reset();
           else actions.loadSample();

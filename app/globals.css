@@ -2,13 +2,13 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-/* Dark variant follows the <meta name="color-scheme"> override, else the OS. */
+/* Light is the default. "dark" forces dark; "light dark" (the System choice) follows the computer. */
 @custom-variant dark {
   &:where(:root:has(> head > meta[name="color-scheme"][content="dark"]) *) {
     @slot;
   }
   @media (prefers-color-scheme: dark) {
-    &:where(:root:not(:has(> head > meta[name="color-scheme"][content="light"])) *) {
+    &:where(:root:has(> head > meta[name="color-scheme"][content="light dark"]) *) {
       @slot;
     }
   }
@@ -20,6 +20,7 @@
   --font-sans: var(--font-sans);
   --font-heading: var(--font-sans);
   --font-display: var(--font-inter-tight);
+  --font-money: var(--font-space-grotesk);
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
@@ -56,35 +57,35 @@
 }
 
 :root {
-  color-scheme: light dark;
+  color-scheme: light;
 
   &:has(> head > meta[name="color-scheme"][content="dark"]) {
     color-scheme: dark;
   }
-  &:has(> head > meta[name="color-scheme"][content="light"]) {
-    color-scheme: light;
+  &:has(> head > meta[name="color-scheme"][content="light dark"]) {
+    color-scheme: light dark;
   }
 
-  --background: light-dark(oklch(0.985 0.002 10), oklch(0.165 0.01 10));
-  --foreground: light-dark(oklch(0.2 0.03 265), oklch(0.96 0.005 10));
-  --card: light-dark(oklch(1 0 0), oklch(0.215 0.012 10));
+  --background: light-dark(#f7f8fa, #0a0e15);
+  --foreground: light-dark(#0a0e15, #ffffff);
+  --card: light-dark(#ffffff, #171c26);
   --card-foreground: var(--foreground);
-  --popover: light-dark(oklch(1 0 0), oklch(0.235 0.014 10));
+  --popover: light-dark(#ffffff, #212631);
   --popover-foreground: var(--foreground);
-  --primary: light-dark(oklch(0.655 0.235 7), oklch(0.72 0.2 8));
-  --primary-foreground: light-dark(oklch(1 0 0), oklch(0.2 0.05 8));
-  --secondary: light-dark(oklch(0.96 0.004 10), oklch(0.27 0.012 10));
-  --secondary-foreground: light-dark(oklch(0.25 0.03 265), oklch(0.93 0.01 10));
-  --muted: light-dark(oklch(0.96 0.004 10), oklch(0.265 0.012 10));
-  --muted-foreground: light-dark(oklch(0.55 0.02 265), oklch(0.72 0.02 10));
-  --accent: light-dark(oklch(0.965 0.025 7), oklch(0.3 0.06 8));
-  --accent-foreground: light-dark(oklch(0.5 0.21 8), oklch(0.92 0.06 8));
+  --primary: light-dark(oklch(0.655 0.235 7), oklch(0.74 0.19 8));
+  --primary-foreground: light-dark(#ffffff, #0a0e15);
+  --secondary: light-dark(#f0f1f5, #212631);
+  --secondary-foreground: light-dark(#212631, #e0e4eb);
+  --muted: light-dark(#f0f1f5, #212631);
+  --muted-foreground: light-dark(#667085, #a9b1c3);
+  --accent: light-dark(#f0f1f5, #2b3240);
+  --accent-foreground: light-dark(#212631, #ffffff);
   --destructive: light-dark(oklch(0.6 0.235 27), oklch(0.7 0.19 25));
-  --border: light-dark(oklch(0.93 0.004 10), oklch(1 0 0 / 10%));
-  --input: light-dark(oklch(0.91 0.004 10), oklch(1 0 0 / 14%));
+  --border: light-dark(#e0e4eb, oklch(1 0 0 / 10%));
+  --input: light-dark(#d1d6e0, oklch(1 0 0 / 16%));
   --ring: light-dark(oklch(0.7 0.2 7), oklch(0.75 0.17 8));
-  --lime: light-dark(oklch(0.93 0.05 7), oklch(0.36 0.09 8));
-  --lime-foreground: light-dark(oklch(0.52 0.22 8), oklch(0.9 0.08 8));
+  --lime: light-dark(#f0f1f5, #2b3240);
+  --lime-foreground: light-dark(#212631, #ffffff);
   --income: light-dark(oklch(0.7 0.19 148), oklch(0.8 0.18 148));
   --expense: light-dark(oklch(0.6 0.235 27), oklch(0.72 0.18 25));
   --chart-1: light-dark(oklch(0.68 0.18 148), oklch(0.8 0.17 148));
@@ -108,6 +109,10 @@
 }
 
 @layer base {
+  /* A grid column may shrink below its content, so a long number can never stretch its box. */
+  :where(.grid) {
+    grid-template-columns: minmax(0, 1fr);
+  }
   * {
     @apply border-border outline-ring/50;
   }
@@ -136,20 +141,20 @@
   }
 }
 
-/* Numbers: tight, tall, proportional digits (Inter Tight). */
+/* Money: Space Grotesk. */
 @utility money {
-  font-family: var(--font-display), var(--font-sans);
+  font-family: var(--font-money), var(--font-sans);
   font-variant-numeric: proportional-nums;
   font-feature-settings: "tnum" 0;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.01em;
 }
 
 /* Big hero numbers: tighter again. */
 @utility money-lg {
-  font-family: var(--font-display), var(--font-sans);
+  font-family: var(--font-money), var(--font-sans);
   font-variant-numeric: proportional-nums;
   font-feature-settings: "tnum" 0;
-  letter-spacing: -0.045em;
+  letter-spacing: -0.03em;
 }
 
 @utility pb-safe {
@@ -170,3 +175,38 @@
   border-width: 1.5px;
   font-weight: 600;
 }
+
+/* On-screen keyboard: step the bottom bar aside, and leave room when a field is scrolled into view. */
+html[data-keyboard="open"] [data-bottom-nav] {
+  transform: translateY(calc(100% + 1rem));
+  pointer-events: none;
+}
+input,
+textarea,
+[contenteditable] {
+  scroll-margin-block: 6rem;
+}
+
+/* Browser autofill paints inputs its own blue-grey. Keep the app's own look instead. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+input:autofill {
+  -webkit-text-fill-color: var(--foreground);
+  caret-color: var(--foreground);
+  /* Pushes the browser's background change so far away that it never shows. */
+  transition:
+    background-color 600000s 0s,
+    color 600000s 0s;
+}
+
+/* Amounts may not make their box wider; the NumberFit script shrinks them to fit instead. */
+@layer base {
+  :where(.money, .money-lg):not(input, textarea) {
+    min-inline-size: 0;
+    max-inline-size: 100%;
+    overflow-x: clip;
+  }
+}
+

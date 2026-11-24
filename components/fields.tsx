@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, type ReactNode } from "react";
+import { MoneyText } from "@/components/money-text";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { formatNumber, parseDigits } from "@/lib/format";
@@ -29,7 +30,7 @@ export function Field({
       {children}
       {error ? (
         <p role="alert" className="text-sm text-destructive">
-          {error}
+          <MoneyText>{error}</MoneyText>
         </p>
       ) : hint ? (
         <p className="mt-0.5 text-sm text-muted-foreground">{hint}</p>
@@ -81,6 +82,7 @@ export function MoneyInput({
           onChange(n === 0 && e.target.value === "" ? undefined : n);
         }}
         className={cn(
+          "money",
           hero
             ? "money-lg h-16 rounded-2xl border-2 bg-accent/40 pl-14 text-3xl font-bold md:text-3xl focus-visible:border-primary"
             : "pl-11",

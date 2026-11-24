@@ -3,66 +3,63 @@
 import { useEffect, useLayoutEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
-const BARS = 5;
-const STAGGER_MS = 70; // delay between one bar and the next, top to bottom
-const BAR_MS = 320;
+const OUT_MS = 320;
+const IN_MS = 420;
 const EASE = "cubic-bezier(0.65, 0, 0.35, 1)";
 
-type Phase = "idle" | "covering" | "waiting" | "revealing";
+type Phase = "idle" | "leaving" | "waiting" | "entering";
 
 /**
- * Page change curtain made of 5 pink bars, top to bottom.
- * Cover: the bars sweep in from the left, one after another, until the page is hidden.
- * The route changes underneath, then the bars slide out to the right in the same order.
- * Link clicks start with the cover. Other navigations (back button, router.push
- * from code) skip the cover and only play the exit.
+ * Page change: the current page slides down and out, the route changes underneath,
+ * and the new page slides in from the bottom to the top.
+ * Link clicks start with the exit. Other navigations (back button, router.push
+ * from code) skip the exit and only play the entrance.
  */
 export function RouteTransition() {
   const router = useRouter();
   const pathname = usePathname();
-  const root = useRef<HTMLDivElement>(null);
   const phase = useRef<Phase>("idle");
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const first = useRef(true);
 
   const reduced = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const bars = () => Array.from(root.current?.children ?? []) as HTMLElement[];
+  const page = () => document.querySelector("main") as HTMLElement | null;
 
-  function park() {
-    const node = root.current;
-    if (!node) return;
-    bars().forEach((b) => {
-      b.getAnimations().forEach((a) => a.cancel());
-      b.style.transform = "translateX(-100%)";
-    });
-    node.style.pointerEvents = "none";
-    phase.current = "idle";
+  function leave() {
+    const m = page();
+    if (!m) return Promise.resolve();
+    return m.animate(
+      [
+        { transform: "translateY(0)", opacity: 1 },
+        { transform: "translateY(100vh)", opacity: 0 },
+      ],
+      { duration: OUT_MS, easing: EASE, fill: "both" },
+    ).finished;
   }
 
-  /** Run the same slide on every bar, each one a little later than the one above. */
-  function sweep(from: string, to: string) {
-    return Promise.all(
-      bars().map(
-        (b, i) =>
-          b.animate([{ transform: from }, { transform: to }], {
-            duration: BAR_MS,
-            delay: i * STAGGER_MS,
-            easing: EASE,
-            fill: "both",
-          }).finished,
-      ),
-    );
-  }
+  const toTop = () => window.scrollTo({ top: 0, left: 0, behavior: "instant" });
 
-  function reveal() {
-    const node = root.current;
-    if (!node) return;
+  function enter() {
+    toTop();
+    const m = page();
     clearTimeout(timer.current);
-    phase.current = "revealing";
-    bars().forEach((b) => b.getAnimations().forEach((a) => a.cancel()));
-    bars().forEach((b) => (b.style.transform = "translateX(0)"));
-    node.style.pointerEvents = "auto";
-    sweep("translateX(0)", "translateX(100%)").then(park, park);
+    if (!m) {
+      phase.current = "idle";
+      return;
+    }
+    phase.current = "entering";
+    m.getAnimations().forEach((a) => a.cancel());
+    const done = () => {
+      m.getAnimations().forEach((a) => a.cancel());
+      phase.current = "idle";
+    };
+    m.animate(
+      [
+        { transform: "translateY(100vh)", opacity: 0 },
+        { transform: "translateY(0)", opacity: 1 },
+      ],
+      { duration: IN_MS, easing: EASE },
+    ).finished.then(done, done);
   }
 
   // The route changed: play the exit.
@@ -72,7 +69,7 @@ export function RouteTransition() {
       return;
     }
     if (reduced()) return;
-    if (phase.current === "waiting" || phase.current === "idle") reveal();
+    if (phase.current === "waiting" || phase.current === "idle") enter();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
@@ -81,8 +78,6 @@ export function RouteTransition() {
     function onClick(e: MouseEvent) {
       if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
       if (reduced()) return;
-      const node = root.current;
-      if (!node) return;
       const link = (e.target as Element | null)?.closest?.("a");
       if (!link || (link.target && link.target !== "_self") || link.hasAttribute("download")) return;
       const url = new URL(link.href, window.location.href);
@@ -93,13 +88,13 @@ export function RouteTransition() {
       e.stopPropagation();
       if (phase.current !== "idle") return;
 
-      phase.current = "covering";
-      node.style.pointerEvents = "auto";
-      sweep("translateX(-100%)", "translateX(0)").then(() => {
+      phase.current = "leaving";
+      leave().then(() => {
         phase.current = "waiting";
+        toTop();
         router.push(url.pathname + url.search + url.hash);
-        // If the route never changes, do not leave the page covered.
-        timer.current = setTimeout(reveal, 2500);
+        // If the route never changes, do not leave the page hidden.
+        timer.current = setTimeout(enter, 2500);
       });
     }
     document.addEventListener("click", onClick, true);
@@ -107,19 +102,5 @@ export function RouteTransition() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
 
-  return (
-    <div ref={root} aria-hidden className="pointer-events-none fixed inset-0 z-[100] overflow-hidden">
-      {Array.from({ length: BARS }, (_, i) => (
-        <div
-          key={i}
-          className="absolute inset-x-0 bg-primary will-change-transform"
-          style={{
-            top: `${(i * 100) / BARS}%`,
-            height: `calc(${100 / BARS}% + 1px)`, // 1px overlap hides seams between bars
-            transform: "translateX(-100%)",
-          }}
-        />
-      ))}
-    </div>
-  );
+  return null;
 }

@@ -187,9 +187,9 @@ function StatsView({ state }: { state: AppState }) {
                 <li key={id} className="flex items-center gap-3">
                   <CategoryBadge category={cat} size="sm" />
                   <div className="grid min-w-0 flex-1 gap-1.5">
-                    <div className="flex items-baseline justify-between gap-2">
-                      <span className="truncate text-sm font-semibold">{cat?.name ?? "Uncategorized"}</span>
-                      <span className="money text-sm font-bold">{formatIDR(amount)}</span>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="min-w-0 truncate text-sm font-semibold">{cat?.name ?? "Uncategorized"}</span>
+                      <span className="money max-w-[60%] shrink-0 text-sm font-bold">{formatIDR(amount)}</span>
                     </div>
                     <Progress value={share} color={CATEGORY_COLORS[cat?.color ?? "slate"]?.solid} />
                   </div>

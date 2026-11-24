@@ -300,16 +300,18 @@ export default function ActivityPage() {
       <PageHeader
         title="Activity"
         subtitle={`${state.transactions.length} transaction${state.transactions.length === 1 ? "" : "s"}`}
-      />
-      <Segmented
-        label="View"
-        value={mode}
-        onChange={setMode}
-        className="lg:max-w-xs"
-        options={[
-          { value: "daily", label: "Daily" },
-          { value: "all", label: "All" },
-        ]}
+        tabs={
+          <Segmented
+            label="View"
+            value={mode}
+            onChange={setMode}
+            className="lg:max-w-xs"
+            options={[
+              { value: "daily", label: "Daily" },
+              { value: "all", label: "All" },
+            ]}
+          />
+        }
       />
       {mode === "daily" ? <DailyView state={state} /> : <AllView state={state} />}
     </div>

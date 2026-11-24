@@ -1,4 +1,4 @@
-/* Luar service worker.
+/* Budget Tracker service worker.
  * - Makes the app installable and gives it an offline screen.
  * - Caches only static files. Pages and the API are never cached, because they hold one person's data. */
 const VERSION = "v1";

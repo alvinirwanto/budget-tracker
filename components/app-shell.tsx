@@ -124,7 +124,8 @@ function BottomNav({ onAdd }: { onAdd: () => void }) {
   return (
       <nav
         aria-label="Main"
-        className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-xl px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] md:hidden"
+        data-bottom-nav
+      className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-xl px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] transition-transform duration-200 motion-reduce:transition-none md:hidden"
       >
         <ul className="flex items-end justify-between rounded-[2rem] border bg-card/95 px-2 shadow-[0_8px_30px_-12px_rgb(0_0_0/0.25)] backdrop-blur">
           {NAV.map((item, i) => {
@@ -187,11 +188,11 @@ function SideNav({ onAdd }: { onAdd: () => void }) {
   const pathname = usePathname();
   return (
     <aside className="fixed inset-y-0 left-0 z-40 hidden w-24 flex-col gap-4 border-r bg-card/60 px-3 py-6 backdrop-blur md:flex lg:w-64 lg:px-5">
-      <p className="flex items-center justify-center gap-2 text-xl font-extrabold tracking-tight lg:justify-start lg:px-2 lg:text-2xl">
-        <span aria-hidden className="grid size-10 place-items-center rounded-2xl bg-accent text-primary">
+      <p className="flex items-center justify-center gap-3 text-lg font-extrabold tracking-tight lg:justify-start lg:px-2">
+        <span aria-hidden className="grid size-10 shrink-0 place-items-center rounded-2xl bg-accent text-primary">
           <WalletIcon className="size-6" weight="fill" />
         </span>
-        <span className="hidden lg:inline">Luar</span>
+        <span className="hidden leading-tight lg:inline">Budget Tracker</span>
       </p>
       <button
         type="button"

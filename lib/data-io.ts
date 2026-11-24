@@ -455,7 +455,7 @@ export function parseJSON(textIn: string): ParseResult {
 export async function toXlsx(p: Portable, state: DataParts): Promise<Blob> {
   const ExcelJS = (await import("exceljs")).default;
   const wb = new ExcelJS.Workbook();
-  wb.creator = "Luar budget tracker";
+  wb.creator = "Budget Tracker";
   wb.created = new Date();
 
   const sheet = (name: string, columns: { header: string; width: number; money?: boolean }[], rows: unknown[][]) => {

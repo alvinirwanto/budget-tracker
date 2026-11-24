@@ -42,6 +42,7 @@ export function Ring({
   track = "var(--muted)",
   children,
   label,
+  fluid,
 }: {
   value: number;
   size?: number;
@@ -51,6 +52,8 @@ export function Ring({
   track?: string;
   children?: React.ReactNode;
   label?: string;
+  /** CSS length: the ring may shrink to this when the screen is narrow. */
+  fluid?: string;
 }) {
   const v = Math.max(0, Math.min(1, value));
   const r = (size - stroke) / 2;
@@ -58,11 +61,11 @@ export function Ring({
   return (
     <div
       className="relative grid shrink-0 place-items-center"
-      style={{ width: size, height: size }}
+      style={{ width: fluid ? `min(${size}px, ${fluid})` : size, aspectRatio: "1", height: fluid ? "auto" : size }}
       role="img"
       aria-label={label}
     >
-      <svg width={size} height={size} className="-rotate-90" aria-hidden>
+      <svg viewBox={`0 0 ${size} ${size}`} className="size-full -rotate-90" aria-hidden>
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -84,7 +87,9 @@ export function Ring({
           className="transition-[stroke-dashoffset] duration-700 ease-out motion-reduce:transition-none"
         />
       </svg>
-      <div className="absolute inset-0 grid place-items-center">{children}</div>
+      <div className="absolute inset-0 grid place-items-center">
+        <div className="w-[72%] text-center">{children}</div>
+      </div>
     </div>
   );
 }
@@ -198,7 +203,7 @@ export function RingStat({
   const pct = Math.round(value * 100);
   return (
     <div className="grid justify-items-center gap-2.5 text-center">
-      <Ring size={76} stroke={8} value={value} color={color} over={over} label={`${label} ${pct}% used`}>
+      <Ring size={84} stroke={9} value={value} color={color} over={over} label={`${label} ${pct}% used`}>
         <span className="money text-sm font-bold">{pct}%</span>
       </Ring>
       <span className="max-w-full truncate text-sm text-foreground">{label}</span>

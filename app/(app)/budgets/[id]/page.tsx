@@ -10,6 +10,7 @@ import { BudgetForm } from "@/components/budget-form";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Card, EmptyState, PageHeader, SectionTitle, Skeleton } from "@/components/page-bits";
 import { Sheet } from "@/components/sheet";
+import { MoneyText } from "@/components/money-text";
 import { CategoryBadge, Progress, Ring, RingStat } from "@/components/visuals";
 import { useTransactionSheet } from "@/components/app-shell";
 import { CATEGORY_COLORS } from "@/lib/icons";
@@ -44,8 +45,8 @@ export default function BudgetDetail({ params }: PageProps<"/budgets/[id]">) {
 
   return (
     <div className="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-12 lg:items-start">
-      <div className="lg:col-span-12">
       <PageHeader
+        className="lg:col-span-12"
         title={budget.name}
         back="/budgets"
         subtitle={`${s.days} days`}
@@ -61,11 +62,10 @@ export default function BudgetDetail({ params }: PageProps<"/budgets/[id]">) {
           </Button>
         }
       />
-      </div>
 
       <section
         aria-labelledby="remaining-title"
-        className="grid justify-items-center gap-7 py-2 text-center lg:col-span-5 lg:sticky lg:top-8"
+        className="grid justify-items-center gap-7 py-2 text-center lg:col-span-5 lg:sticky lg:top-28"
       >
         <p className="flex items-center gap-2 rounded-full bg-muted px-5 py-3 text-sm font-semibold">
           <CalendarBlankIcon className="size-4" />
@@ -82,8 +82,9 @@ export default function BudgetDetail({ params }: PageProps<"/budgets/[id]">) {
             <PencilSimpleIcon className="size-5" />
           </Button>
           <Ring
-            size={236}
-            stroke={26}
+            size={268}
+            stroke={28}
+            fluid="calc(100vw - 8.5rem)"
             value={s.remaining / budget.total}
             over={over}
             track="var(--muted)"
@@ -108,13 +109,19 @@ export default function BudgetDetail({ params }: PageProps<"/budgets/[id]">) {
             <PlusIcon className="size-5" />
           </Button>
         </div>
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          {formatIDR(s.spent)} spent of {formatIDR(budget.total)} ({pct}%)
-          <br />
-          {s.status === "active" &&
-            `${s.daysLeft} day${s.daysLeft === 1 ? "" : "s"} left${perDay ? ` · about ${formatIDR(perDay)} a day` : ""}`}
-          {s.status === "upcoming" && "Starts " + formatDate(budget.startDate)}
-          {s.status === "ended" && "This budget has ended"}
+        <p className="grid w-full gap-1 text-sm leading-relaxed text-muted-foreground">
+          <span data-fit>
+            <MoneyText>{`${formatIDR(s.spent)} spent of ${formatIDR(budget.total)} (${pct}%)`}</MoneyText>
+          </span>
+          {s.status === "active" && (
+            <span data-fit>
+              <MoneyText>
+                {`${s.daysLeft} day${s.daysLeft === 1 ? "" : "s"} left${perDay ? ` · about ${formatIDR(perDay)} a day` : ""}`}
+              </MoneyText>
+            </span>
+          )}
+          {s.status === "upcoming" && <span>{"Starts " + formatDate(budget.startDate)}</span>}
+          {s.status === "ended" && <span>This budget has ended</span>}
         </p>
         {s.rows.length > 0 && (
           <ul className="grid w-full grid-cols-3 gap-x-3 gap-y-6 pt-2">
@@ -165,14 +172,11 @@ export default function BudgetDetail({ params }: PageProps<"/budgets/[id]">) {
                       </p>
                       <p
                         className={cn(
-                          "money-lg text-right text-lg font-bold whitespace-nowrap",
+                          "money-lg max-w-[55%] text-right text-lg font-bold whitespace-nowrap",
                           rowOver ? "text-expense" : "text-foreground",
                         )}
                       >
                         {formatIDR(r.left)}
-                        <span className="mt-1 block text-sm font-medium text-muted-foreground">
-                          {rowOver ? "over" : "left"}
-                        </span>
                       </p>
                     </div>
                     <Progress
@@ -181,9 +185,14 @@ export default function BudgetDetail({ params }: PageProps<"/budgets/[id]">) {
                       over={rowOver}
                       color={CATEGORY_COLORS[cat?.color ?? "slate"]?.solid}
                     />
-                    <p className="money mt-3 text-sm text-muted-foreground">
-                      {formatIDR(r.spent)} spent of {formatIDR(r.allocated)}
-                    </p>
+                    <div className="mt-3 flex items-center justify-between gap-3 text-sm text-muted-foreground">
+                      <p className="money min-w-0 flex-1">
+                        {formatIDR(r.spent)} spent of {formatIDR(r.allocated)}
+                      </p>
+                      <p className={cn("money shrink-0 font-semibold", rowOver && "text-expense")}>
+                        {r.allocated ? Math.round((r.spent / r.allocated) * 100) : 0}%
+                      </p>
+                    </div>
                   </li>
                 );
               })}
@@ -192,16 +201,25 @@ export default function BudgetDetail({ params }: PageProps<"/budgets/[id]">) {
         </Card>
       </section>
 
-      <Card className="grid gap-2 text-sm lg:col-span-7 lg:col-start-6">
-        <Line label="Total budget" value={formatIDR(budget.total)} />
-        <Line label="Planned in categories" value={formatIDR(s.allocated)} />
-        <Line
-          label={s.unallocated < 0 ? "Planned over the budget" : "Not planned yet"}
-          value={formatIDR(s.unallocated)}
-          bad={s.unallocated < 0}
-        />
-        {s.unplanned > 0 && <Line label="Spent outside the split" value={formatIDR(s.unplanned)} />}
-      </Card>
+      <section aria-labelledby="numbers-title" className="lg:col-span-7 lg:col-start-6">
+        <SectionTitle id="numbers-title">Numbers</SectionTitle>
+        <Card className="px-5 py-2 md:px-7">
+          <ul className="divide-y">
+            <Row label="Total budget" value={formatIDR(budget.total)} strong />
+            <Row
+              label="Planned in categories"
+              value={formatIDR(s.allocated)}
+              bar={{ value: budget.total ? s.allocated / budget.total : 0, over: s.unallocated < 0 }}
+            />
+            <Row
+              label={s.unallocated < 0 ? "Planned over the budget" : "Not planned yet"}
+              value={formatIDR(s.unallocated)}
+              bad={s.unallocated < 0}
+            />
+            {s.unplanned > 0 && <Row label="Spent outside the split" value={formatIDR(s.unplanned)} />}
+          </ul>
+        </Card>
+      </section>
 
       <Sheet
         open={editing !== null}
@@ -235,11 +253,34 @@ export default function BudgetDetail({ params }: PageProps<"/budgets/[id]">) {
   );
 }
 
-function Line({ label, value, bad }: { label: string; value: string; bad?: boolean }) {
+function Row({
+  label,
+  value,
+  bad,
+  strong,
+  bar,
+}: {
+  label: string;
+  value: string;
+  bad?: boolean;
+  strong?: boolean;
+  bar?: { value: number; over: boolean };
+}) {
   return (
-    <div className="flex items-center justify-between gap-3">
-      <span className="text-muted-foreground">{label}</span>
-      <span className={cn("money font-bold", bad && "text-expense")}>{value}</span>
-    </div>
+    <li className="py-5">
+      <div className="flex items-center gap-4">
+        <span className={cn("shrink-0 text-base", strong ? "font-semibold" : "text-muted-foreground")}>{label}</span>
+        <span
+          className={cn(
+            "money-lg min-w-0 flex-1 text-right font-bold",
+            strong ? "text-2xl" : "text-lg",
+            bad && "text-expense",
+          )}
+        >
+          {value}
+        </span>
+      </div>
+      {bar && <Progress className="mt-4 h-2.5" value={bar.value} over={bar.over} />}
+    </li>
   );
 }

@@ -193,6 +193,7 @@ export function DataTransfer() {
 
             <div className="grid gap-3">
               <Segmented
+            className="bg-background"
                 label="Import mode"
                 value={mode}
                 onChange={setMode}
@@ -226,6 +227,7 @@ export function DataTransfer() {
         title="Replace everything?"
         description="All your current pockets, transactions, categories and budgets will be deleted. This cannot be undone."
         confirmLabel="Replace"
+        confirmText={state.user?.email}
         onConfirm={runImport}
       />
     </div>

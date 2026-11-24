@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { BillForm } from "@/components/bill-form";
 import { ConfirmDialog } from "@/components/confirm-dialog";
+import { MoneyText } from "@/components/money-text";
 import { Card, EmptyState, PageHeader, Skeleton } from "@/components/page-bits";
 import { Segmented } from "@/components/segmented";
 import { Sheet } from "@/components/sheet";
@@ -46,15 +47,21 @@ function View({ state, initialTab }: { state: AppState; initialTab: "alerts" | "
 
   return (
     <div className="grid max-w-3xl gap-6">
-      <PageHeader title="Reminders" back="history" subtitle="Bills to pay and budgets close to the limit" />
-      <Segmented
-        label="Reminders view"
-        value={tab}
-        onChange={setTab}
-        options={[
-          { value: "alerts", label: unread ? `Notifications (${unread})` : "Notifications" },
-          { value: "bills", label: "Bills" },
-        ]}
+      <PageHeader
+        title="Reminders"
+        back="history"
+        subtitle="Bills to pay and budgets close to the limit"
+        tabs={
+          <Segmented
+            label="Reminders view"
+            value={tab}
+            onChange={setTab}
+            options={[
+              { value: "alerts", label: unread ? `Notifications (${unread})` : "Notifications" },
+              { value: "bills", label: "Bills" },
+            ]}
+          />
+        }
       />
       {tab === "alerts" ? (
         <Alerts notices={notices} seen={seen} unread={unread} onBills={() => setTab("bills")} />
@@ -129,10 +136,10 @@ function Alerts({
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="flex items-center gap-2">
-                    <span className="font-semibold">{n.title}</span>
+                    <span className="font-semibold"><MoneyText>{n.title}</MoneyText></span>
                     {isNew && <i aria-label="New" className="size-2 shrink-0 rounded-full bg-primary" />}
                   </span>
-                  <span className="mt-1.5 block text-sm leading-relaxed text-muted-foreground">{n.body}</span>
+                  <span data-fit="3" className="mt-1.5 block text-sm leading-relaxed text-muted-foreground"><MoneyText>{n.body}</MoneyText></span>
                 </span>
                 <CaretRightIcon className="mt-3 size-4 shrink-0 text-muted-foreground" />
               </Link>
@@ -208,10 +215,10 @@ function Bills({ state }: { state: AppState }) {
                       <span className="mt-1 block text-sm text-muted-foreground">
                         Reminds {remindText(b.remindDays)}
                       </span>
+                      {b.amount ? (
+                        <span className="money-lg mt-2 block text-lg font-bold">{formatIDR(b.amount)}</span>
+                      ) : null}
                     </span>
-                    {b.amount ? (
-                      <span className="money-lg text-lg font-bold whitespace-nowrap">{formatIDR(b.amount)}</span>
-                    ) : null}
                   </button>
 
                   <div className="flex items-center justify-between gap-3">

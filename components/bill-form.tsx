@@ -93,6 +93,7 @@ export function BillForm({
           name="repeat"
           render={({ field }) => (
             <Segmented
+            className="bg-background"
               label="Repeats"
               value={field.value as BillRepeat}
               onChange={field.onChange}

@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { BudgetForm } from "@/components/budget-form";
 import { EmptyState, PageHeader, Skeleton } from "@/components/page-bits";
 import { Sheet } from "@/components/sheet";
+import { MoneyText } from "@/components/money-text";
 import { Progress } from "@/components/visuals";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { actions, useAppState } from "@/lib/store";
@@ -80,19 +81,20 @@ export default function BudgetsPage() {
                     <p className={cn("money-lg text-4xl font-bold", over && "text-expense")}>
                       {formatIDR(s.remaining)}
                     </p>
-                    <p className="mt-2 text-sm text-muted-foreground">
-                      {over ? "over" : "left"} of {formatIDR(b.total)}
-                      {s.status === "active" && ` · ${s.daysLeft} day${s.daysLeft === 1 ? "" : "s"} left`}
+                    <p data-fit className="mt-2 text-sm text-muted-foreground">
+                      <MoneyText>
+                        {`${over ? "over" : "left"} of ${formatIDR(b.total)}${s.status === "active" ? ` · ${s.daysLeft} day${s.daysLeft === 1 ? "" : "s"} left` : ""}`}
+                      </MoneyText>
                     </p>
                   </div>
 
                   <div className="mt-7 grid gap-3">
                     <Progress value={s.spent / b.total} over={over} className="h-3" />
                     <div className="flex items-center justify-between gap-3 text-sm">
-                      <span className="text-muted-foreground">
+                      <span data-fit className="min-w-0 flex-1 text-muted-foreground">
                         <span className="money font-semibold text-foreground">{formatIDR(s.spent)}</span> spent
                       </span>
-                      <span className={cn("money font-bold", over && "text-expense")}>{used}%</span>
+                      <span className={cn("money shrink-0 font-bold", over && "text-expense")}>{used}%</span>
                     </div>
                   </div>
                 </Link>
