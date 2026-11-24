@@ -34,7 +34,7 @@ export function AccountCard() {
   const initial = (name[0] ?? "?").toUpperCase();
 
   return (
-    <section aria-labelledby="account-title" className="grid gap-4 md:col-span-2">
+    <section aria-labelledby="account-title" className="md:col-span-2">
       <SectionTitle id="account-title">Account</SectionTitle>
       <Card className="grid gap-5">
         <div className="flex items-center gap-4">

@@ -31,6 +31,8 @@ export function CategoryBadge({
         size === "lg" && "size-14 [&>svg]:size-7",
       )}
     >
+      {/* The icon comes from a cache of already-loaded Phosphor components, so it is stable between renders. */}
+      {/* eslint-disable-next-line react-hooks/static-components */}
       <Icon weight="duotone" />
     </span>
   );

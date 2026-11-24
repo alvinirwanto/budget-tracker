@@ -117,7 +117,6 @@ export function TransactionForm({
         name="type"
         render={({ field }) => (
           <Segmented
-            className="bg-background"
             label="Transaction type"
             value={field.value as TransactionType}
             options={TYPES}

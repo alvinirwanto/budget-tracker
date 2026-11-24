@@ -128,10 +128,10 @@ function BottomNav({ onAdd }: { onAdd: () => void }) {
     <nav
       aria-label="Main"
       data-bottom-nav
-      className="fixed inset-x-0 bottom-0 z-40 mx-auto flex max-w-xl items-center gap-3 px-4 pb-[max(1.5rem,calc(env(safe-area-inset-bottom)+0.5rem))] transition-transform duration-200 motion-reduce:transition-none md:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 mx-auto flex max-w-xl items-center gap-3 px-4 pb-[max(0.75rem,calc(env(safe-area-inset-bottom)+0.25rem))] transition-transform duration-200 motion-reduce:transition-none md:hidden"
     >
       {/* A light pill with the current page in a soft inner pill, and a round add button beside it. */}
-      <ul className="relative flex h-16 min-w-0 flex-1 items-center rounded-full border bg-card p-1 shadow-[0_10px_28px_-10px_rgb(0_0_0/0.3)]">
+      <ul className="relative flex h-16 min-w-0 flex-1 items-center rounded-full border bg-card p-1 shadow-[0_10px_28px_-10px_rgb(0_0_0/0.3)] dark:border-white/10 dark:bg-[#05070b]">
         {/* The soft pill slides to the page you open. */}
         <span
           aria-hidden
@@ -145,13 +145,13 @@ function BottomNav({ onAdd }: { onAdd: () => void }) {
         {items.map((n) => {
           const active = n.href === "/" ? pathname === "/" : pathname.startsWith(n.href);
           return (
-            <li key={n.href} className="relative min-w-0 flex-1">
+            <li key={n.href} className="relative h-full min-w-0 flex-1">
               <Link
                 href={n.href}
                 data-nav
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex h-14 flex-col items-center justify-center gap-1 rounded-full text-[10.5px] leading-none font-semibold transition-colors duration-300 focus-visible:outline-3 focus-visible:outline-ring",
+                  "flex h-full flex-col items-center justify-center gap-1 rounded-full text-[10.5px] leading-none font-semibold transition-colors duration-300 focus-visible:outline-3 focus-visible:outline-ring",
                   active ? "text-primary" : "text-muted-foreground hover:text-foreground",
                 )}
               >

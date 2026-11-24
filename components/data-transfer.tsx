@@ -193,7 +193,6 @@ export function DataTransfer() {
 
             <div className="grid gap-3">
               <Segmented
-            className="bg-background"
                 label="Import mode"
                 value={mode}
                 onChange={setMode}
