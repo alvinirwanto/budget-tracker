@@ -86,4 +86,52 @@ export function useScheme(): Scheme {
  * Runs in the <head> before the first paint so the saved choice never flashes the wrong theme.
  * It creates the meta tag itself, so it never depends on where React puts a tag.
  */
-export const NO_FLASH_SCRIPT = `try{var s=localStorage.getItem("${KEY}");var m=document.createElement("meta");m.name="color-scheme";m.content=s==="dark"?"dark":s==="system"?"light dark":"light";document.head.appendChild(m);var d=s==="dark"||(s==="system"&&matchMedia("(prefers-color-scheme: dark)").matches);var c=document.createElement("meta");c.name="theme-color";c.content=d?"#0a0e15":"#f7f8fa";document.head.appendChild(c)}catch(e){}`;
+export const NO_FLASH_SCRIPT = `try{var s=localStorage.getItem("${KEY}");var m=document.createElement("meta");m.name="color-scheme";m.content=s==="dark"?"dark":s==="system"?"light dark":"light";document.head.appendChild(m);var d=s==="dark"||(s==="system"&&matchMedia("(prefers-color-scheme: dark)").matches);var c=document.createElement("meta");c.name="theme-color";c.content=d?"#0a0e15":"#f7f8fa";document.head.appendChild(c);var a=localStorage.getItem("accent");if(a)document.documentElement.setAttribute("data-accent",a)}catch(e){}`;
+
+/** Accent colors. The values live in globals.css under [data-accent]; swatch is only for the picker. */
+export const ACCENTS = [
+  { value: "pink", label: "Pink", swatch: "#ff3378" },
+  { value: "lavender", label: "Lavender", swatch: "#8b6ff0" },
+  { value: "teal", label: "Teal", swatch: "#0fb5a6" },
+  { value: "neon", label: "Neon", swatch: "#9be400" },
+  { value: "ocean", label: "Ocean", swatch: "#2f7df6" },
+  { value: "sunset", label: "Sunset", swatch: "#ff7a1a" },
+  { value: "crimson", label: "Crimson", swatch: "#e11d48" },
+  { value: "gold", label: "Gold", swatch: "#e5a400" },
+] as const;
+export type Accent = (typeof ACCENTS)[number]["value"];
+const ACCENT_KEY = "accent";
+const accentListeners = new Set<() => void>();
+let accent: Accent | null = null;
+
+function readAccent(): Accent {
+  try {
+    const v = localStorage.getItem(ACCENT_KEY);
+    return ACCENTS.some((a) => a.value === v) ? (v as Accent) : "pink";
+  } catch {
+    return "pink";
+  }
+}
+
+export function setAccent(next: Accent) {
+  accent = next;
+  try {
+    localStorage.setItem(ACCENT_KEY, next);
+  } catch {
+    /* still applied for this visit */
+  }
+  document.documentElement.dataset.accent = next;
+  accentListeners.forEach((l) => l());
+}
+
+export function useAccent(): Accent {
+  return useSyncExternalStore(
+    (cb) => {
+      accentListeners.add(cb);
+      document.documentElement.dataset.accent = (accent ??= readAccent());
+      return () => void accentListeners.delete(cb);
+    },
+    () => (accent ??= readAccent()),
+    () => "pink",
+  );
+}

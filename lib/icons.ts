@@ -52,6 +52,31 @@ export const CATEGORY_COLORS: Record<string, { bg: string; fg: string; solid: st
   slate: { bg: "bg-slate-500/15", fg: "text-slate-600 dark:text-slate-300", solid: "oklch(0.6 0.02 250)" },
 };
 
+export const HEX = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i;
+
+/** "f39" or "#FF3399" -> "#ff3399". Null when it is not a hex color. */
+export function normalizeHex(v: string): string | null {
+  const m = HEX.exec(v.trim());
+  if (!m) return null;
+  const h = m[1].toLowerCase();
+  return "#" + (h.length === 3 ? [...h].map((c) => c + c).join("") : h);
+}
+
+/** A category color is one of the named ones or a hex code. */
+export function categoryColor(key?: string): { bg: string; fg: string; solid: string; style?: React.CSSProperties } {
+  const named = key ? CATEGORY_COLORS[key] : undefined;
+  if (named) return named;
+  const hex = key ? normalizeHex(key) : null;
+  if (hex)
+    return {
+      bg: "",
+      fg: "",
+      solid: hex,
+      style: { backgroundColor: `color-mix(in srgb, ${hex} 18%, transparent)`, color: hex },
+    };
+  return CATEGORY_COLORS.slate;
+}
+
 export const POCKET_ICONS: Record<PocketKind, Icon> = {
   cash: WalletIcon,
   bank: BankIcon,

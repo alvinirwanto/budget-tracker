@@ -3,7 +3,8 @@
 import { Controller, useForm, type Resolver } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { toast } from "sonner";
-import { CheckIcon, TrashIcon } from "@phosphor-icons/react";
+import { CheckIcon, PlusIcon, TrashIcon } from "@phosphor-icons/react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -11,7 +12,9 @@ import { Field } from "@/components/fields";
 import { CategoryBadge } from "@/components/visuals";
 import { categorySchema, type CategoryValues } from "@/lib/schemas";
 import { actions } from "@/lib/store";
-import { CATEGORY_COLORS, CATEGORY_ICONS } from "@/lib/icons";
+import { CATEGORY_COLORS, CATEGORY_ICONS, normalizeHex } from "@/lib/icons";
+import { loadIcon } from "@/lib/phosphor";
+import { cn } from "@/lib/utils";
 import type { Category } from "@/lib/types";
 
 export function CategoryForm({
@@ -28,6 +31,8 @@ export function CategoryForm({
     register,
     handleSubmit,
     watch,
+    setError,
+    clearErrors,
     formState: { errors },
   } = useForm<CategoryValues>({
     resolver: yupResolver(categorySchema) as Resolver<CategoryValues>,
@@ -40,7 +45,23 @@ export function CategoryForm({
   const icon = watch("icon");
   const color = watch("color");
 
-  const onSubmit = handleSubmit((v) => {
+  // "+" opens a box to type your own. It starts open when the saved value is not one of the presets.
+  const [typeIcon, setTypeIcon] = useState(() => !!category && !(category.icon in CATEGORY_ICONS));
+  const [typeColor, setTypeColor] = useState(() => !!category && !(category.color in CATEGORY_COLORS));
+
+  const onSubmit = handleSubmit(async (v) => {
+    if (!(v.icon in CATEGORY_ICONS) && !(await loadIcon(v.icon))) {
+      setError("icon", { message: `No Phosphor icon is called "${v.icon}"` });
+      return;
+    }
+    if (!(v.color in CATEGORY_COLORS)) {
+      const hex = normalizeHex(v.color);
+      if (!hex) {
+        setError("color", { message: "Use a hex color like #ff6600" });
+        return;
+      }
+      v = { ...v, color: hex };
+    }
     const id = actions.saveCategory({ id: category?.id, ...v });
     toast.success(category ? "Category updated" : "Category added");
     onDone(id);
@@ -66,60 +87,149 @@ export function CategoryForm({
         </Field>
       </div>
 
-      <Field label="Icon">
+      <Field
+        label="Icon"
+        error={errors.icon?.message}
+        hint={typeIcon ? "Type a name from phosphoricons.com, like coffee or bowl-food." : undefined}
+      >
         <Controller
           control={control}
           name="icon"
           render={({ field }) => (
-            <ToggleGroup
-              type="single"
-              value={field.value}
-              onValueChange={(v) => v && field.onChange(v)}
-              aria-label="Icon"
-              spacing={2}
-              className="grid w-full grid-cols-8"
-            >
-              {Object.entries(CATEGORY_ICONS).map(([key, Icon]) => (
-                <ToggleGroupItem
-                  key={key}
-                  value={key}
-                  variant="outline"
-                  aria-label={key}
-                  className="aspect-square h-auto min-h-10 rounded-xl px-0 data-[state=on]:border-primary data-[state=on]:bg-accent data-[state=on]:text-accent-foreground"
+            <div className="grid gap-3">
+              <ToggleGroup
+                type="single"
+                value={typeIcon ? "" : field.value}
+                onValueChange={(v) => {
+                  if (!v) return;
+                  setTypeIcon(false);
+                  clearErrors("icon");
+                  field.onChange(v);
+                }}
+                aria-label="Icon"
+                spacing={2}
+                className="grid w-full grid-cols-8"
+              >
+                {Object.entries(CATEGORY_ICONS).map(([key, Icon]) => (
+                  <ToggleGroupItem
+                    key={key}
+                    value={key}
+                    variant="outline"
+                    aria-label={key}
+                    className="aspect-square h-auto min-h-10 rounded-full px-0 data-[state=on]:border-primary data-[state=on]:bg-accent data-[state=on]:text-accent-foreground"
+                  >
+                    <Icon className="size-5" weight={field.value === key ? "fill" : "regular"} />
+                  </ToggleGroupItem>
+                ))}
+                <button
+                  type="button"
+                  aria-label="Type an icon name"
+                  aria-pressed={typeIcon}
+                  onClick={() => {
+                    setTypeIcon(true);
+                    if (field.value in CATEGORY_ICONS) field.onChange("");
+                  }}
+                  className={cn(
+                    "grid aspect-square min-h-10 place-items-center rounded-full border border-dashed text-muted-foreground focus-visible:outline-3 focus-visible:outline-ring",
+                    typeIcon && "border-primary border-solid bg-accent text-accent-foreground",
+                  )}
                 >
-                  <Icon className="size-5" weight={field.value === key ? "fill" : "regular"} />
-                </ToggleGroupItem>
-              ))}
-            </ToggleGroup>
+                  <PlusIcon className="size-5" weight="bold" />
+                </button>
+              </ToggleGroup>
+              {typeIcon && (
+                <Input
+                  aria-label="Phosphor icon name"
+                  placeholder="coffee"
+                  autoComplete="off"
+                  autoCapitalize="none"
+                  spellCheck={false}
+                  value={field.value in CATEGORY_ICONS ? "" : field.value}
+                  onChange={(e) => {
+                    clearErrors("icon");
+                    field.onChange(e.target.value);
+                  }}
+                  aria-invalid={!!errors.icon || undefined}
+                />
+              )}
+            </div>
           )}
         />
       </Field>
 
-      <Field label="Color">
+      <Field
+        label="Color"
+        error={errors.color?.message}
+      >
         <Controller
           control={control}
           name="color"
           render={({ field }) => (
-            <ToggleGroup
-              type="single"
-              value={field.value}
-              onValueChange={(v) => v && field.onChange(v)}
-              aria-label="Color"
-              spacing={3}
-              className="flex-wrap"
-            >
-              {Object.entries(CATEGORY_COLORS).map(([key, c]) => (
-                <ToggleGroupItem
-                  key={key}
-                  value={key}
-                  aria-label={key}
-                  className="size-11 rounded-full p-0 ring-offset-2 ring-offset-popover hover:opacity-90 data-[state=on]:ring-2 data-[state=on]:ring-primary"
-                  style={{ background: c.solid }}
+            <div className="grid gap-3">
+              <ToggleGroup
+                type="single"
+                value={typeColor ? "" : field.value}
+                onValueChange={(v) => {
+                  if (!v) return;
+                  setTypeColor(false);
+                  clearErrors("color");
+                  field.onChange(v);
+                }}
+                aria-label="Color"
+                spacing={3}
+                className="flex-wrap"
+              >
+                {Object.entries(CATEGORY_COLORS).map(([key, c]) => (
+                  <ToggleGroupItem
+                    key={key}
+                    value={key}
+                    aria-label={key}
+                    className="size-11 rounded-full p-0 ring-offset-2 ring-offset-popover hover:opacity-90 data-[state=on]:ring-2 data-[state=on]:ring-primary"
+                    style={{ background: c.solid }}
+                  >
+                    {field.value === key && <CheckIcon className="size-5 text-white" weight="bold" />}
+                  </ToggleGroupItem>
+                ))}
+                <button
+                  type="button"
+                  aria-label="Type a hex color"
+                  aria-pressed={typeColor}
+                  onClick={() => {
+                    setTypeColor(true);
+                    if (field.value in CATEGORY_COLORS) field.onChange("");
+                  }}
+                  className={cn(
+                    "grid size-11 place-items-center rounded-full border border-dashed text-muted-foreground focus-visible:outline-3 focus-visible:outline-ring",
+                    typeColor && "border-primary border-solid bg-accent text-accent-foreground",
+                  )}
                 >
-                  {field.value === key && <CheckIcon className="size-5 text-white" weight="bold" />}
-                </ToggleGroupItem>
-              ))}
-            </ToggleGroup>
+                  <PlusIcon className="size-5" weight="bold" />
+                </button>
+              </ToggleGroup>
+              {typeColor && (
+                <div className="flex items-center gap-3">
+                  <span
+                    aria-hidden
+                    className="size-11 shrink-0 rounded-full border"
+                    style={{ background: normalizeHex(field.value) ?? "transparent" }}
+                  />
+                  <Input
+                    aria-label="Hex color"
+                    placeholder="#ff6600"
+                    autoComplete="off"
+                    autoCapitalize="none"
+                    spellCheck={false}
+                    maxLength={7}
+                    value={field.value in CATEGORY_COLORS ? "" : field.value}
+                    onChange={(e) => {
+                      clearErrors("color");
+                      field.onChange(e.target.value);
+                    }}
+                    aria-invalid={!!errors.color || undefined}
+                  />
+                </div>
+              )}
+            </div>
           )}
         />
       </Field>

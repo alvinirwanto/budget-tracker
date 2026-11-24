@@ -1,7 +1,8 @@
 "use client";
 
 import type { Bucket } from "@/lib/stats";
-import { CATEGORY_COLORS, CATEGORY_ICONS } from "@/lib/icons";
+import { CATEGORY_ICONS, categoryColor } from "@/lib/icons";
+import { useCustomIcon } from "@/lib/phosphor";
 import type { Category } from "@/lib/types";
 import { formatCompact } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -13,11 +14,14 @@ export function CategoryBadge({
   category?: Pick<Category, "icon" | "color">;
   size?: "sm" | "md" | "lg";
 }) {
-  const Icon = CATEGORY_ICONS[category?.icon ?? "other"] ?? CATEGORY_ICONS.other;
-  const color = CATEGORY_COLORS[category?.color ?? "slate"] ?? CATEGORY_COLORS.slate;
+  const name = category?.icon ?? "other";
+  const custom = useCustomIcon(name in CATEGORY_ICONS ? undefined : name);
+  const Icon = CATEGORY_ICONS[name] ?? custom ?? CATEGORY_ICONS.other;
+  const color = categoryColor(category?.color);
   return (
     <span
       aria-hidden
+      style={color.style}
       className={cn(
         "grid shrink-0 place-items-center rounded-full",
         color.bg,

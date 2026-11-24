@@ -1,6 +1,7 @@
 "use client";
 
 import { useSyncExternalStore, type ReactNode } from "react";
+import { useBackClose } from "@/lib/use-back-close";
 import {
   Dialog,
   DialogContent,
@@ -41,6 +42,7 @@ function useIsWide() {
 /** Bottom sheet on phones, centered dialog on tablet and desktop. */
 export function Sheet({ open, onOpenChange, title, description, children }: Props) {
   const wide = useIsWide();
+  useBackClose(open, () => onOpenChange(false));
 
   if (wide) {
     return (

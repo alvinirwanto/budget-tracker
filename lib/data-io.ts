@@ -1,5 +1,5 @@
 import { format, isValid, parse, parseISO } from "date-fns";
-import { CATEGORY_COLORS, CATEGORY_ICONS } from "./icons";
+import { CATEGORY_COLORS, CATEGORY_ICONS, normalizeHex } from "./icons";
 import { ISO } from "./format";
 import { balanceOf } from "./stats";
 import type { AppState, Bill, BillRepeat, Budget, Category, Pocket, PocketKind, Transaction, TransactionType } from "./types";
@@ -161,8 +161,8 @@ function toKind(v: unknown): PocketKind {
   return "cash";
 }
 
-const cleanIcon = (v: unknown) => (norm(v) in CATEGORY_ICONS ? norm(v) : "other");
-const cleanColor = (v: unknown) => (norm(v) in CATEGORY_COLORS ? norm(v) : "slate");
+const cleanIcon = (v: unknown) => (norm(v) in CATEGORY_ICONS ? norm(v) : /^[a-z0-9 _-]{2,30}$/i.test(text(v)) ? text(v) : "other");
+const cleanColor = (v: unknown) => (norm(v) in CATEGORY_COLORS ? norm(v) : (normalizeHex(text(v)) ?? "slate"));
 const text = (v: unknown) => String(v ?? "").trim();
 
 /* ------------------------------------------------------------------ */

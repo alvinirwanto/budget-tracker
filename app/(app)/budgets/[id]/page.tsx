@@ -11,9 +11,9 @@ import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Card, EmptyState, PageHeader, SectionTitle, Skeleton } from "@/components/page-bits";
 import { Sheet } from "@/components/sheet";
 import { MoneyText } from "@/components/money-text";
-import { CategoryBadge, Progress, Ring, RingStat } from "@/components/visuals";
+import { CategoryBadge, Donut, Progress, Ring, RingStat } from "@/components/visuals";
 import { useTransactionSheet } from "@/components/app-shell";
-import { CATEGORY_COLORS } from "@/lib/icons";
+import { categoryColor } from "@/lib/icons";
 import { actions, useAppState } from "@/lib/store";
 import { summarizeBudget } from "@/lib/stats";
 import { formatDate, formatIDR } from "@/lib/format";
@@ -41,6 +41,18 @@ export default function BudgetDetail({ params }: PageProps<"/budgets/[id]">) {
   const s = summarizeBudget(budget, state.transactions);
   const over = s.remaining < 0;
   const pct = Math.round((s.spent / budget.total) * 100);
+  const slices = s.rows.map((r) => {
+    const cat = state.categories.find((c) => c.id === r.categoryId);
+    return { name: cat?.name ?? "Deleted", color: categoryColor(cat?.color).solid, planned: r.allocated, spent: r.spent };
+  });
+  const plannedSlices = [
+    ...slices.map((x) => ({ value: x.planned, color: x.color })),
+    { value: Math.max(0, s.unallocated), color: "transparent" },
+  ];
+  const spentSlices = [
+    ...slices.map((x) => ({ value: x.spent, color: x.color })),
+    { value: s.unplanned, color: "oklch(0.6 0.02 250)" },
+  ];
   const perDay = s.daysLeft > 0 && s.remaining > 0 ? Math.floor(s.remaining / s.daysLeft) : 0;
 
   return (
@@ -133,7 +145,7 @@ export default function BudgetDetail({ params }: PageProps<"/budgets/[id]">) {
                     label={cat?.name ?? "Deleted"}
                     value={r.allocated ? r.spent / r.allocated : 0}
                     over={r.left < 0}
-                    color={CATEGORY_COLORS[cat?.color ?? "slate"]?.solid}
+                    color={categoryColor(cat?.color).solid}
                   />
                 </li>
               );
@@ -141,6 +153,56 @@ export default function BudgetDetail({ params }: PageProps<"/budgets/[id]">) {
           </ul>
         )}
       </section>
+
+      {slices.length > 0 && (
+        <section aria-labelledby="mix-title" className="lg:col-span-7 lg:col-start-6">
+          <SectionTitle id="mix-title">Breakdown</SectionTitle>
+          <Card className="grid gap-5">
+            <div className="grid grid-cols-2 justify-items-center gap-3">
+              <figure className="grid justify-items-center gap-2">
+                <Donut slices={plannedSlices} size={132} stroke={22} label="Share of the budget planned for each category">
+                  <span className="money text-lg font-extrabold">
+                    {budget.total ? Math.round((s.allocated / budget.total) * 100) : 0}%
+                  </span>
+                </Donut>
+                <figcaption className="text-center text-sm font-semibold">
+                  Planned
+                  <span className="block text-xs font-normal text-muted-foreground">of the budget</span>
+                </figcaption>
+              </figure>
+              <figure className="grid justify-items-center gap-2">
+                <Donut slices={spentSlices} size={132} stroke={22} label="Share of the money spent by category">
+                  <span className="money max-w-[70%] text-sm font-extrabold">{formatIDR(s.spent)}</span>
+                </Donut>
+                <figcaption className="text-center text-sm font-semibold">
+                  Spent
+                  <span className="block text-xs font-normal text-muted-foreground">so far</span>
+                </figcaption>
+              </figure>
+            </div>
+            <ul className="grid gap-2.5 border-t pt-4 text-sm">
+              <li className="grid grid-cols-[auto_minmax(0,1fr)_3rem_3rem] gap-3 text-xs text-muted-foreground">
+                <span aria-hidden className="size-3" />
+                <span />
+                <span className="text-right">planned</span>
+                <span className="text-right">spent</span>
+              </li>
+              {slices.map((x) => (
+                <li key={x.name} className="grid grid-cols-[auto_minmax(0,1fr)_3rem_3rem] items-center gap-3">
+                  <span aria-hidden className="size-3 rounded-full" style={{ background: x.color }} />
+                  <span className="truncate font-medium">{x.name}</span>
+                  <span className="money text-right text-muted-foreground">
+                    {s.allocated ? Math.round((x.planned / budget.total) * 100) : 0}%
+                  </span>
+                  <span className="money text-right font-semibold">
+                    {s.spent ? Math.round((x.spent / s.spent) * 100) : 0}%
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </Card>
+        </section>
+      )}
 
       <section aria-labelledby="split-title" className="lg:col-span-7 lg:col-start-6">
         <SectionTitle
@@ -183,7 +245,7 @@ export default function BudgetDetail({ params }: PageProps<"/budgets/[id]">) {
                       className="mt-5 h-2.5"
                       value={r.allocated ? r.spent / r.allocated : 0}
                       over={rowOver}
-                      color={CATEGORY_COLORS[cat?.color ?? "slate"]?.solid}
+                      color={categoryColor(cat?.color).solid}
                     />
                     <div className="mt-3 flex items-center justify-between gap-3 text-sm text-muted-foreground">
                       <p className="money min-w-0 flex-1">

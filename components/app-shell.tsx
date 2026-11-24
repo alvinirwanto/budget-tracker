@@ -20,6 +20,7 @@ import {
   PlusIcon,
   TagIcon,
   UserCircleIcon,
+  UserIcon,
   WalletIcon,
 } from "@phosphor-icons/react";
 import { toast } from "sonner";
@@ -47,7 +48,7 @@ const NAV = [
   { href: "/activity", label: "Activity", Icon: ListMagnifyingGlassIcon },
   null,
   { href: "/budgets", label: "Budgets", Icon: ChartPieSliceIcon },
-  { href: "/profile", label: "Profile", Icon: UserCircleIcon },
+  { href: "/profile", label: "Profile", Icon: UserIcon },
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -121,54 +122,55 @@ export function AppShell({ children }: { children: ReactNode }) {
 
 function BottomNav({ onAdd }: { onAdd: () => void }) {
   const pathname = usePathname();
+  const items = NAV.filter((n): n is Exclude<(typeof NAV)[number], null> => n !== null);
+  const current = items.findIndex((n) => (n.href === "/" ? pathname === "/" : pathname.startsWith(n.href)));
   return (
-      <nav
-        aria-label="Main"
-        data-bottom-nav
-      className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-xl px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] transition-transform duration-200 motion-reduce:transition-none md:hidden"
+    <nav
+      aria-label="Main"
+      data-bottom-nav
+      className="fixed inset-x-0 bottom-0 z-40 mx-auto flex max-w-xl items-center gap-3 px-4 pb-[max(1.5rem,calc(env(safe-area-inset-bottom)+0.5rem))] transition-transform duration-200 motion-reduce:transition-none md:hidden"
+    >
+      {/* A light pill with the current page in a soft inner pill, and a round add button beside it. */}
+      <ul className="relative flex h-16 min-w-0 flex-1 items-center rounded-full border bg-card p-1 shadow-[0_10px_28px_-10px_rgb(0_0_0/0.3)]">
+        {/* The soft pill slides to the page you open. */}
+        <span
+          aria-hidden
+          className="absolute top-1 bottom-1 left-1 rounded-full bg-primary/10 transition-[transform,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] motion-reduce:transition-none"
+          style={{
+            width: `calc((100% - 0.5rem) / ${items.length})`,
+            transform: `translateX(${Math.max(current, 0) * 100}%)`,
+            opacity: current < 0 ? 0 : 1,
+          }}
+        />
+        {items.map((n) => {
+          const active = n.href === "/" ? pathname === "/" : pathname.startsWith(n.href);
+          return (
+            <li key={n.href} className="relative min-w-0 flex-1">
+              <Link
+                href={n.href}
+                data-nav
+                aria-current={active ? "page" : undefined}
+                className={cn(
+                  "flex h-14 flex-col items-center justify-center gap-1 rounded-full text-[10.5px] leading-none font-semibold transition-colors duration-300 focus-visible:outline-3 focus-visible:outline-ring",
+                  active ? "text-primary" : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                <n.Icon className="size-[22px]" weight="bold" />
+                {n.label}
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+      <button
+        type="button"
+        onClick={onAdd}
+        aria-label="Add transaction"
+        className="grid size-16 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground shadow-[0_10px_24px_-8px_rgb(0_0_0/0.35)] transition-transform active:scale-95 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring motion-reduce:transition-none"
       >
-        <ul className="flex items-end justify-between rounded-[2rem] border bg-card/95 px-2 shadow-[0_8px_30px_-12px_rgb(0_0_0/0.25)] backdrop-blur">
-          {NAV.map((item, i) => {
-            if (!item) {
-              return (
-                <li key="fab" className="relative -mt-6 flex-none px-1">
-                  <button
-                    type="button"
-                    onClick={onAdd}
-                    aria-label="Add transaction"
-                    className="grid size-14 place-items-center rounded-full bg-primary text-primary-foreground shadow-lg ring-4 ring-background transition-transform active:scale-95 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring motion-reduce:transition-none"
-                  >
-                    <PlusIcon className="size-7" weight="bold" />
-                  </button>
-                </li>
-              );
-            }
-            const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
-            return (
-              <li key={item.href} className="flex-1" data-i={i}>
-                <Link
-                  href={item.href}
-                  data-nav
-                  aria-current={active ? "page" : undefined}
-                  className={cn(
-                    "relative flex min-h-14 flex-col items-center justify-center gap-0.5 rounded-2xl text-[11px] font-semibold transition-colors focus-visible:outline-3 focus-visible:outline-ring",
-                    active ? "text-primary" : "text-muted-foreground",
-                  )}
-                >
-                  {active && (
-                    <span
-                      aria-hidden
-                      className="absolute inset-x-5 top-0 h-[3px] rounded-full bg-primary"
-                    />
-                  )}
-                  <item.Icon className="size-6" weight={active ? "fill" : "regular"} />
-                  {item.label}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
+        <PlusIcon className="size-8" weight="bold" />
+      </button>
+    </nav>
   );
 }
 

@@ -3,6 +3,7 @@
 import { useId, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useBackClose } from "@/lib/use-back-close";
 import {
   Dialog,
   DialogContent,
@@ -38,6 +39,7 @@ export function ConfirmDialog({
     if (!o) setTyped("");
     onOpenChange(o);
   };
+  useBackClose(open, () => setOpen(false));
   const locked = !!confirmText && typed.trim().toLowerCase() !== confirmText.trim().toLowerCase();
   return (
     <Dialog open={open} onOpenChange={setOpen}>

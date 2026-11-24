@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { addDays, eachDayOfInterval, format, parseISO } from "date-fns";
 import { CaretLeftIcon, CaretRightIcon, PlusIcon } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
@@ -22,12 +22,6 @@ export function DailyView({ state }: { state: AppState }) {
   const anchor = parseISO(selected);
   const range = periodRange("week", anchor);
   const days = eachDayOfInterval({ start: parseISO(range.start), end: parseISO(range.end) });
-
-  const busy = useMemo(() => {
-    const set = new Set<string>();
-    for (const t of state.transactions) set.add(t.date);
-    return set;
-  }, [state.transactions]);
 
   const dayTx = state.transactions.filter((t) => t.date === selected);
   const total = dayTx.reduce(
@@ -88,12 +82,6 @@ export function DailyView({ state }: { state: AppState }) {
                   )}
                 >
                   {format(d, "d")}
-                  {busy.has(iso) && (
-                    <i
-                      aria-hidden
-                      className="absolute -bottom-0.5 size-1.5 rounded-full bg-primary group-data-[state=on]/day:hidden"
-                    />
-                  )}
                 </span>
               </ToggleGroupItem>
             );

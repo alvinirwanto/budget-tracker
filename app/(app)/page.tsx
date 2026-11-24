@@ -29,7 +29,7 @@ import { BarChart, CategoryBadge, Progress, Ring } from "@/components/visuals";
 import { useAppState } from "@/lib/store";
 import { formatIDR, todayISO } from "@/lib/format";
 import { sortByDateDesc } from "@/lib/describe";
-import { CATEGORY_COLORS } from "@/lib/icons";
+import { categoryColor } from "@/lib/icons";
 import {
   activeBudget,
   buckets,
@@ -424,7 +424,7 @@ function CategoryRow({
   amount: number;
   share: number;
 }) {
-  const color = CATEGORY_COLORS[category?.color ?? "slate"]?.solid;
+  const color = categoryColor(category?.color).solid;
   return (
     <li className="flex items-center gap-3">
       <CategoryBadge category={category} size="sm" />

@@ -20,7 +20,9 @@ import { Segmented } from "@/components/segmented";
 import { AccountCard } from "@/components/account-card";
 import { DataTransfer } from "@/components/data-transfer";
 import { actions, useAppState } from "@/lib/store";
-import { setScheme, useScheme, type Scheme } from "@/lib/theme";
+import { ACCENTS, setAccent, setScheme, useAccent, useScheme, type Scheme } from "@/lib/theme";
+import { CheckIcon } from "@phosphor-icons/react";
+import { cn } from "@/lib/utils";
 
 const SCHEMES: { value: Scheme; label: string; Icon: Icon }[] = [
   { value: "light", label: "Light", Icon: SunIcon },
@@ -30,6 +32,7 @@ const SCHEMES: { value: Scheme; label: string; Icon: Icon }[] = [
 
 export default function ProfilePage() {
   const scheme = useScheme();
+  const accent = useAccent();
   const state = useAppState();
   const [confirm, setConfirm] = useState<"reset" | "sample" | null>(null);
 
@@ -52,6 +55,30 @@ export default function ProfilePage() {
             System follows your phone or computer setting
             and changes with it.
           </p>
+          <div role="radiogroup" aria-label="Accent color" className="grid grid-cols-4 gap-3 border-t pt-4">
+            {ACCENTS.map((a) => (
+              <button
+                key={a.value}
+                type="button"
+                role="radio"
+                aria-checked={accent === a.value}
+                onClick={() => setAccent(a.value)}
+                className="grid justify-items-center gap-1.5 rounded-lg py-1 text-xs font-semibold focus-visible:outline-3 focus-visible:outline-ring"
+              >
+                <span
+                  aria-hidden
+                  style={{ backgroundColor: a.swatch }}
+                  className={cn(
+                    "grid size-11 place-items-center rounded-full text-white ring-offset-2 ring-offset-card transition-shadow",
+                    accent === a.value && "ring-2 ring-foreground",
+                  )}
+                >
+                  {accent === a.value && <CheckIcon className="size-5 text-black/70" weight="bold" />}
+                </span>
+                {a.label}
+              </button>
+            ))}
+          </div>
         </Card>
       </section>
 

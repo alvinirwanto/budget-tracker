@@ -46,8 +46,8 @@ export type PocketValues = yup.InferType<typeof pocketSchema>;
 
 export const categorySchema = yup.object({
   name: yup.string().trim().required("Give the category a name").max(24, "Max 24 characters"),
-  icon: yup.string().required(),
-  color: yup.string().required(),
+  icon: yup.string().required("Pick or type an icon"),
+  color: yup.string().required("Pick or type a color"),
 });
 export type CategoryValues = yup.InferType<typeof categorySchema>;
 

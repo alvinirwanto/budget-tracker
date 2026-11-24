@@ -45,6 +45,7 @@ export function BudgetForm({
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<BudgetValues>({
     resolver: yupResolver(schema) as Resolver<BudgetValues>,
@@ -205,6 +206,22 @@ export function BudgetForm({
                 <XIcon className="size-4" />
               </Button>
             </div>
+            {left !== 0 && total > 0 && (rows[i]?.categoryId ?? "") !== "" && (Number(rows[i]?.amount) || 0) + left > 0 && (
+              <button
+                type="button"
+                className="justify-self-start rounded-full px-3 py-1 text-xs font-semibold text-primary hover:bg-accent focus-visible:outline-3 focus-visible:outline-ring"
+                onClick={() =>
+                  setValue(`allocations.${i}.amount`, (Number(rows[i]?.amount) || 0) + left, {
+                    shouldDirty: true,
+                    shouldValidate: true,
+                  })
+                }
+              >
+                {left > 0 ? "Add the left " : "Take off the extra "}
+                <span className="money">{formatIDR(Math.abs(left))}</span>
+                {" here"}
+              </button>
+            )}
             {(errors.allocations?.[i]?.categoryId?.message || errors.allocations?.[i]?.amount?.message) && (
               <p role="alert" className="text-sm text-destructive">
                 {errors.allocations?.[i]?.categoryId?.message ?? errors.allocations?.[i]?.amount?.message}

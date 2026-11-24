@@ -217,3 +217,47 @@ input:autofill {
   }
 }
 
+
+/* Accent colors, picked in Profile. Pink is the default and lives in :root above. */
+:root[data-accent="lavender"] {
+  --primary: light-dark(oklch(0.6 0.2 292), oklch(0.75 0.14 295));
+  --primary-foreground: light-dark(#ffffff, #0a0e15);
+  --ring: light-dark(oklch(0.65 0.19 292), oklch(0.77 0.13 295));
+  --chart-3: light-dark(oklch(0.6 0.2 292), oklch(0.75 0.14 295));
+}
+:root[data-accent="teal"] {
+  --primary: light-dark(oklch(0.62 0.12 185), oklch(0.78 0.13 182));
+  --primary-foreground: light-dark(#ffffff, #0a0e15);
+  --ring: light-dark(oklch(0.68 0.12 185), oklch(0.8 0.12 182));
+  --chart-3: light-dark(oklch(0.62 0.12 185), oklch(0.78 0.13 182));
+}
+:root[data-accent="neon"] {
+  --primary: light-dark(oklch(0.82 0.24 128), oklch(0.88 0.24 128));
+  --primary-foreground: light-dark(#0a0e15, #0a0e15);
+  --ring: light-dark(oklch(0.8 0.22 128), oklch(0.88 0.2 128));
+  --chart-3: light-dark(oklch(0.82 0.24 128), oklch(0.88 0.24 128));
+}
+:root[data-accent="ocean"] {
+  --primary: light-dark(oklch(0.6 0.2 258), oklch(0.74 0.15 252));
+  --primary-foreground: light-dark(#ffffff, #0a0e15);
+  --ring: light-dark(oklch(0.66 0.18 258), oklch(0.76 0.14 252));
+  --chart-3: light-dark(oklch(0.6 0.2 258), oklch(0.74 0.15 252));
+}
+:root[data-accent="sunset"] {
+  --primary: light-dark(oklch(0.7 0.19 50), oklch(0.78 0.16 55));
+  --primary-foreground: light-dark(#0a0e15, #0a0e15);
+  --ring: light-dark(oklch(0.74 0.17 50), oklch(0.8 0.15 55));
+  --chart-3: light-dark(oklch(0.7 0.19 50), oklch(0.78 0.16 55));
+}
+:root[data-accent="crimson"] {
+  --primary: light-dark(oklch(0.58 0.23 20), oklch(0.72 0.19 18));
+  --primary-foreground: light-dark(#ffffff, #0a0e15);
+  --ring: light-dark(oklch(0.64 0.21 20), oklch(0.74 0.17 18));
+  --chart-3: light-dark(oklch(0.58 0.23 20), oklch(0.72 0.19 18));
+}
+:root[data-accent="gold"] {
+  --primary: light-dark(oklch(0.78 0.16 85), oklch(0.85 0.16 88));
+  --primary-foreground: light-dark(#0a0e15, #0a0e15);
+  --ring: light-dark(oklch(0.8 0.15 85), oklch(0.86 0.15 88));
+  --chart-3: light-dark(oklch(0.78 0.16 85), oklch(0.85 0.16 88));
+}

@@ -14,7 +14,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Card, PageHeader, Skeleton } from "@/components/page-bits";
 import { LineChart } from "@/components/line-chart";
 import { CategoryBadge, Progress } from "@/components/visuals";
-import { CATEGORY_COLORS } from "@/lib/icons";
+import { categoryColor } from "@/lib/icons";
 import { formatDate, formatIDR } from "@/lib/format";
 import { monthSeries, periodRange, spendByCategory, totals } from "@/lib/stats";
 import { useAppState } from "@/lib/store";
@@ -193,7 +193,7 @@ function StatsView({ state }: { state: AppState }) {
                       <span className="min-w-0 truncate text-sm font-semibold">{cat?.name ?? "Uncategorized"}</span>
                       <span className="money max-w-[60%] shrink-0 text-sm font-bold">{formatIDR(amount)}</span>
                     </div>
-                    <Progress value={share} color={CATEGORY_COLORS[cat?.color ?? "slate"]?.solid} />
+                    <Progress value={share} color={categoryColor(cat?.color).solid} />
                   </div>
                   <span className="w-9 text-right text-xs text-muted-foreground">{Math.round(share * 100)}%</span>
                 </li>
