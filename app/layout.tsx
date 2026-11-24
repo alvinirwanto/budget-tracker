@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Inter_Tight, Space_Grotesk } from "next/font/google";
+import { Inter, Inter_Tight, Manrope } from "next/font/google";
 import "./globals.css";
 import { KeyboardAware } from "@/components/keyboard-aware";
 import { NumberFit } from "@/components/number-fit";
@@ -9,7 +9,7 @@ import { NO_FLASH_SCRIPT } from "@/lib/theme";
 const font = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const display = Inter_Tight({ subsets: ["latin"], variable: "--font-inter-tight" });
 // Every amount of money is set in this one.
-const money = Space_Grotesk({ subsets: ["latin"], variable: "--font-space-grotesk" });
+const money = Manrope({ subsets: ["latin"], variable: "--font-manrope" });
 
 export const metadata: Metadata = {
   title: "Budget Tracker",
@@ -26,7 +26,7 @@ export const viewport: Viewport = {
   viewportFit: "cover",
   // The on-screen keyboard shrinks the page (instead of covering it), so fixed bars and sheets stay above it.
   interactiveWidget: "resizes-content",
-  themeColor: "#ff3378",
+  themeColor: "#f7f8fa",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

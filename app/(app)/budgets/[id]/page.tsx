@@ -153,7 +153,7 @@ export default function BudgetDetail({ params }: PageProps<"/budgets/[id]">) {
         >
           Details
         </SectionTitle>
-        <Card className="px-5 py-3 md:px-7">
+        <Card className="px-4 py-3 md:px-7">
           {s.rows.length === 0 ? (
             <p className="py-8 text-center text-sm leading-relaxed text-muted-foreground">
               No split yet. Edit the budget to divide it by category.
@@ -203,7 +203,7 @@ export default function BudgetDetail({ params }: PageProps<"/budgets/[id]">) {
 
       <section aria-labelledby="numbers-title" className="lg:col-span-7 lg:col-start-6">
         <SectionTitle id="numbers-title">Numbers</SectionTitle>
-        <Card className="px-5 py-2 md:px-7">
+        <Card className="px-4 py-2 md:px-7">
           <ul className="divide-y">
             <Row label="Total budget" value={formatIDR(budget.total)} strong />
             <Row

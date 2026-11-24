@@ -19,7 +19,7 @@ export function PocketCard({
   return (
     <div
       className={cn(
-        "grid w-56 shrink-0 gap-4 rounded-2xl bg-card p-5 shadow-card dark:border",
+        "grid w-56 shrink-0 gap-4 rounded-2xl bg-card p-4 shadow-card md:p-5 dark:border",
         isAsset && "bg-amber-400/10 ring-1 ring-amber-400/40",
         className,
       )}

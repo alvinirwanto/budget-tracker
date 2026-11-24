@@ -121,7 +121,7 @@ export function DailyView({ state }: { state: AppState }) {
             body="Tap Add to record what you spent or earned."
           />
         ) : (
-          <Card className="px-5 py-1 md:px-6">
+          <Card className="px-4 py-1 md:px-6">
             <ul className="divide-y">
               {dayTx.map((t) => {
                 const d = describeTransaction(t, state);

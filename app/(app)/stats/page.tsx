@@ -97,7 +97,7 @@ function StatsView({ state }: { state: AppState }) {
         }
       />
 
-      <div ref={chipsRef} className="-mx-5 overflow-x-auto px-5 pb-1 [scrollbar-width:none] md:mx-0 md:px-0">
+      <div ref={chipsRef} className="-mx-4 overflow-x-auto px-4 pb-1 [scrollbar-width:none] md:mx-0 md:px-0">
         <ToggleGroup
           type="single"
           value={String(month)}
@@ -146,7 +146,7 @@ function StatsView({ state }: { state: AppState }) {
               <span key={p.day}>{p.day}</span>
             ))}
         </div>
-        <p className="text-sm text-muted-foreground" aria-live="polite">
+        <p data-fit className="text-sm text-muted-foreground" aria-live="polite">
           {formatDate(series[active].date, "EEEE d MMM")}: spent{" "}
           <span className="money font-semibold text-foreground">{formatIDR(series[active].expense)}</span>, earned{" "}
           <span className="money font-semibold text-foreground">{formatIDR(series[active].income)}</span>

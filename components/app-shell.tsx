@@ -72,7 +72,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <SideNav onAdd={() => open()} />
       </Suspense>
       <div className="min-h-dvh md:pl-24 lg:pl-64">
-        <main className="mx-auto w-full max-w-7xl px-5 pt-[max(1.25rem,env(safe-area-inset-top))] pb-32 md:px-8 md:pt-8 md:pb-12 lg:px-10 lg:pt-10">
+        <main className="mx-auto w-full max-w-7xl px-4 pt-[max(1.25rem,env(safe-area-inset-top))] pb-32 md:px-8 md:pt-8 md:pb-12 lg:px-10 lg:pt-10">
           {children}
         </main>
       </div>

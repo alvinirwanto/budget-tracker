@@ -20,7 +20,7 @@
   --font-sans: var(--font-sans);
   --font-heading: var(--font-sans);
   --font-display: var(--font-inter-tight);
-  --font-money: var(--font-space-grotesk);
+  --font-money: var(--font-manrope);
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
@@ -101,6 +101,13 @@
   }
 }
 
+/* Phones read better a notch smaller: everything is rem-based, so this scales text and spacing together. */
+@media (max-width: 767px) {
+  html {
+    font-size: 15px;
+  }
+}
+
 /* Desktop reads better a notch smaller: everything is rem-based, so this scales it all. */
 @media (min-width: 1024px) {
   html {
@@ -141,7 +148,7 @@
   }
 }
 
-/* Money: Space Grotesk. */
+/* Money: Manrope. */
 @utility money {
   font-family: var(--font-money), var(--font-sans);
   font-variant-numeric: proportional-nums;

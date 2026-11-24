@@ -205,7 +205,7 @@ function HomeView({ state }: { state: AppState }) {
       </div>
 
       <div className="grid content-start gap-5 lg:col-span-4">
-        <Card className="px-5 py-1.5">
+        <Card className="px-4 py-1.5 md:px-5">
           <ul className="divide-y">
             <TotalRow label="Income" amount={sum.income} dot="bg-income" />
             <TotalRow label="Expense" amount={sum.expense} dot="bg-primary" />
@@ -248,7 +248,7 @@ function HomeView({ state }: { state: AppState }) {
         >
           Pockets
         </SectionTitle>
-        <ul className="-mx-5 flex snap-x snap-mandatory scroll-px-5 gap-3 overflow-x-auto px-5 py-1.5 [scrollbar-width:none] max-md:-my-1.5 md:mx-0 md:grid md:grid-cols-4 md:overflow-visible md:px-0 xl:grid-cols-5">
+        <ul className="-mx-4 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 py-1.5 [scrollbar-width:none] max-md:-my-1.5 md:mx-0 md:grid md:grid-cols-4 md:overflow-visible md:px-0 xl:grid-cols-5">
           {state.pockets.map((p) => (
             <li key={p.id} className="snap-start">
               <PocketCard pocket={p} balance={balances.get(p.id) ?? 0} />
@@ -261,7 +261,7 @@ function HomeView({ state }: { state: AppState }) {
         {budget && budgetSummary ? (
           <Link
             href={`/budgets/${budget.id}`}
-            className="block rounded-2xl bg-card shadow-card dark:border p-5 transition-colors hover:bg-muted/40 focus-visible:outline-3 focus-visible:outline-ring md:p-5"
+            className="block rounded-2xl bg-card shadow-card dark:border p-4 transition-colors hover:bg-muted/40 focus-visible:outline-3 focus-visible:outline-ring md:p-5"
           >
             <h2 className="mb-4 font-bold">Budget</h2>
             <div className="flex items-center gap-4">

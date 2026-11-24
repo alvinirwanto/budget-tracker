@@ -49,7 +49,7 @@ export function PageHeader({
       className={cn(
         // Sticks to the top. It reaches the page edges and sits under the phone notch, and the negative
         // margins cancel its padding so nothing moves when it is not stuck.
-        "sticky top-0 z-30 -mx-5 -mt-[calc(env(safe-area-inset-top)+1rem)] -mb-5 grid gap-1 bg-background/90 px-5 pt-[calc(env(safe-area-inset-top)+1rem)] pb-3 backdrop-blur-md md:-mx-8 md:px-8 lg:-mx-10 lg:px-10",
+        "sticky top-0 z-30 -mx-4 -mt-[calc(env(safe-area-inset-top)+1rem)] -mb-5 grid gap-1 bg-background/90 px-4 pt-[calc(env(safe-area-inset-top)+1rem)] pb-3 backdrop-blur-md md:-mx-8 md:px-8 lg:-mx-10 lg:px-10",
         className,
       )}
     >
@@ -87,7 +87,7 @@ export function Card({
   as?: "section" | "div" | "article";
 } & React.HTMLAttributes<HTMLElement>) {
   return (
-    <Tag className={cn("rounded-2xl bg-card p-5 shadow-card dark:border", className)} {...rest}>
+    <Tag className={cn("rounded-2xl bg-card p-4 shadow-card md:p-5 dark:border", className)} {...rest}>
       {children}
     </Tag>
   );

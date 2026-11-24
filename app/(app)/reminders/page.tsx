@@ -121,7 +121,7 @@ function Alerts({
                 href={n.href}
                 onClick={() => actions.markSeen([n.key])}
                 className={cn(
-                  "flex items-start gap-4 rounded-2xl bg-card p-5 shadow-card transition-colors hover:bg-muted/40 focus-visible:outline-3 focus-visible:outline-ring dark:border",
+                  "flex items-start gap-4 rounded-2xl bg-card p-4 shadow-card transition-colors md:p-5 hover:bg-muted/40 focus-visible:outline-3 focus-visible:outline-ring dark:border",
                   isNew && "ring-1 ring-primary/30",
                 )}
               >
