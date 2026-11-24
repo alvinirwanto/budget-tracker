@@ -123,7 +123,7 @@ function HomeView({ state }: { state: AppState }) {
             </h2>
             <NotificationBell state={state} />
           </div>
-          <p className="money-lg w-[120.48%] max-w-none origin-left scale-x-[0.83] text-[4rem] leading-none font-extrabold md:text-8xl">{formatIDR(total)}</p>
+          <p className="money-lg text-[2.6rem] leading-none font-extrabold md:text-7xl">{formatIDR(total)}</p>
 
           <div
             role="img"
