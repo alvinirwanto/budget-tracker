@@ -6,6 +6,10 @@ import { differenceInCalendarDays, parseISO } from "date-fns";
 import {
   CalendarDotsIcon,
   CaretLeftIcon,
+  ChartDonutIcon,
+  ClockCounterClockwiseIcon,
+  CoinsIcon,
+  TargetIcon,
   CaretRightIcon,
   LightbulbIcon,
   MoneyIcon,
@@ -14,7 +18,7 @@ import {
   WalletIcon,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
-import { Card, EmptyState, PageHeader, SectionTitle, Skeleton } from "@/components/page-bits";
+import { Card, CardTitle, PageHeader, Skeleton } from "@/components/page-bits";
 import { MoneyText } from "@/components/money-text";
 import { NotificationBell } from "@/components/notification-bell";
 import { PocketCard } from "@/components/pocket-card";
@@ -130,7 +134,7 @@ function HomeView({ state }: { state: AppState }) {
             {assets > 0 && <div className="h-full flex-1 rounded-full bg-amber-400" />}
           </div>
 
-          <ul className="grid gap-3 text-sm">
+          <ul className="grid gap-2 border-t pt-4 text-sm">
             <li className="flex items-center gap-2.5">
               <i aria-hidden className="size-2.5 rounded-full bg-primary" />
               <span className="shrink-0 text-muted-foreground">Spendable</span>
@@ -214,17 +218,15 @@ function HomeView({ state }: { state: AppState }) {
         </Card>
 
         <Card className="grid gap-4">
-          <h2 className="flex items-center gap-2 font-bold">
-            <LightbulbIcon className="size-5 text-muted-foreground" weight="duotone" /> Insight
-          </h2>
-          <p data-fit="2" className="min-h-[2lh] text-sm leading-relaxed text-muted-foreground">
+          <CardTitle icon={LightbulbIcon}>Insight</CardTitle>
+          <p data-fit className="text-sm leading-relaxed text-muted-foreground">
             {week.income === 0 && week.expense === 0
               ? "Nothing recorded this week yet."
               : weekNet >= 0
                 ? <MoneyText>{`You saved ${formatIDR(weekNet)} this week`}</MoneyText>
                 : <MoneyText>{`You spent ${formatIDR(-weekNet)} more than you earned this week`}</MoneyText>}
           </p>
-          <div className="flex items-center gap-3 rounded-2xl bg-accent p-4 text-accent-foreground">
+          <div className="flex items-center gap-3 rounded-lg bg-accent p-4 text-accent-foreground">
             <CalendarDotsIcon className="size-9 shrink-0 text-primary" weight="duotone" />
             <div className="min-w-0">
               <p className="money truncate text-lg font-extrabold">{formatIDR(perDay)}</p>
@@ -234,36 +236,26 @@ function HomeView({ state }: { state: AppState }) {
         </Card>
       </div>
 
-      <section aria-labelledby="pockets-title" className="lg:col-span-12">
-        <SectionTitle
-          id="pockets-title"
-          action={
-            <Link
-              href="/pockets"
-              className="flex min-h-11 items-center gap-1 text-sm font-semibold text-primary"
-            >
-              Manage <CaretRightIcon className="size-4" />
-            </Link>
-          }
-        >
+      <Card as="section" aria-labelledby="pockets-title" className="grid gap-4 lg:col-span-12">
+        <CardTitle id="pockets-title" icon={CoinsIcon} href="/pockets" linkLabel="Manage">
           Pockets
-        </SectionTitle>
-        <ul className="-mx-4 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 py-1.5 [scrollbar-width:none] max-md:-my-1.5 md:mx-0 md:grid md:grid-cols-4 md:overflow-visible md:px-0 xl:grid-cols-5">
+        </CardTitle>
+        <ul className="-mx-4 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 py-1.5 -my-1.5 [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-4 md:overflow-visible md:px-0 xl:grid-cols-5">
           {state.pockets.map((p) => (
             <li key={p.id} className="snap-start">
-              <PocketCard pocket={p} balance={balances.get(p.id) ?? 0} />
+              <PocketCard inset pocket={p} balance={balances.get(p.id) ?? 0} />
             </li>
           ))}
         </ul>
-      </section>
+      </Card>
 
       <div className="grid gap-6 lg:col-span-12 lg:grid-cols-3">
         {budget && budgetSummary ? (
           <Link
             href={`/budgets/${budget.id}`}
-            className="block rounded-2xl bg-card shadow-card dark:border p-4 transition-colors hover:bg-muted/40 focus-visible:outline-3 focus-visible:outline-ring md:p-5"
+            className="grid content-start gap-4 rounded-2xl bg-card shadow-card dark:border p-4 transition-colors hover:bg-muted/40 focus-visible:outline-3 focus-visible:outline-ring md:p-5"
           >
-            <h2 className="mb-4 font-bold">Budget</h2>
+            <CardTitle icon={TargetIcon}>Budget</CardTitle>
             <div className="flex items-center gap-4">
               <Ring
                 size={92}
@@ -296,8 +288,8 @@ function HomeView({ state }: { state: AppState }) {
             </div>
           </Link>
         ) : (
-          <Card className="grid content-center justify-items-start gap-2">
-            <h2 className="font-bold">Budget</h2>
+          <Card className="grid content-start justify-items-start gap-4">
+            <CardTitle icon={TargetIcon}>Budget</CardTitle>
             <p className="text-sm text-muted-foreground">
               Plan a date range and split it by category.
             </p>
@@ -307,8 +299,8 @@ function HomeView({ state }: { state: AppState }) {
           </Card>
         )}
 
-        <Card className="md:p-5">
-          <h2 className="mb-4 font-bold">By category</h2>
+        <Card className="grid content-start gap-4 pb-6 md:pb-7">
+          <CardTitle icon={ChartDonutIcon}>By category</CardTitle>
           {byCat.length === 0 ? (
             <p className="py-4 text-center text-sm text-muted-foreground">
               Nothing spent this {period}.
@@ -327,15 +319,10 @@ function HomeView({ state }: { state: AppState }) {
           )}
         </Card>
 
-        <Card className="grid content-start gap-4 md:p-5">
-          <div className="flex items-center justify-between gap-2">
-            <h2 className="flex items-center gap-2 font-bold">
-              <MoneyIcon className="size-5 text-muted-foreground" weight="duotone" /> Expense summary
-            </h2>
-            <Link href="/stats" className="flex min-h-11 items-center gap-1 text-sm font-semibold text-primary">
-              Statistics <CaretRightIcon className="size-4" />
-            </Link>
-          </div>
+        <Card className="grid content-start gap-5 pb-6 md:pb-7">
+          <CardTitle icon={MoneyIcon} href="/stats" linkLabel="Statistics">
+            Expense summary
+          </CardTitle>
           <p className="money-lg text-3xl md:text-4xl font-bold">{formatIDR(sum.expense)}</p>
           {delta !== null ? (
             <p
@@ -352,43 +339,30 @@ function HomeView({ state }: { state: AppState }) {
           ) : (
             <p className="text-sm text-muted-foreground">No spending last {period} to compare.</p>
           )}
-          <div className="mt-1 grid gap-2.5">
+          <div className="grid gap-6 border-t pt-5">
             <CompareBar label={`Last ${period}`} value={prevSum.expense} max={Math.max(sum.expense, prevSum.expense)} muted />
             <CompareBar label={`This ${period}`} value={sum.expense} max={Math.max(sum.expense, prevSum.expense)} />
           </div>
         </Card>
       </div>
 
-      <section aria-labelledby="recent-title" className="lg:col-span-12">
-        <SectionTitle
-          id="recent-title"
-          action={
-            <Link
-              href="/activity"
-              className="flex min-h-11 items-center gap-1 text-sm font-semibold text-primary"
-            >
-              See all <CaretRightIcon className="size-4" />
-            </Link>
-          }
-        >
+      <Card as="section" aria-labelledby="recent-title" className="grid gap-2 lg:col-span-12">
+        <CardTitle id="recent-title" icon={ClockCounterClockwiseIcon} href="/activity" linkLabel="See all">
           Latest
-        </SectionTitle>
+        </CardTitle>
         {recent.length === 0 ? (
-          <EmptyState
-            title="No transactions yet"
-            body="Add what you spend or earn and pick the pocket it moves through."
-            action={
-              <Button className="h-11 rounded-full px-5" onClick={() => openSheet()}>
-                Add transaction
-              </Button>
-            }
-          />
+          <div className="grid justify-items-start gap-3 pt-2">
+            <p className="text-sm text-muted-foreground">
+              Nothing yet. Add what you spend or earn and pick the pocket it moves through.
+            </p>
+            <Button className="h-11 rounded-full px-5" onClick={() => openSheet()}>
+              Add transaction
+            </Button>
+          </div>
         ) : (
-          <Card className="px-4 py-1 lg:px-6">
-            <TransactionList items={recent} state={state} onSelect={(t) => openSheet({ transaction: t })} />
-          </Card>
+          <TransactionList items={recent} state={state} onSelect={(tx) => openSheet({ transaction: tx })} />
         )}
-      </section>
+      </Card>
     </div>
   );
 }
@@ -431,8 +405,8 @@ function CompareBar({
   muted?: boolean;
 }) {
   return (
-    <div className="grid gap-1">
-      <div className="flex justify-between gap-2 text-xs">
+    <div className="grid gap-2.5">
+      <div className="flex justify-between gap-2 text-sm">
         <span className="shrink-0 text-muted-foreground">{label}</span>
         <span className="money min-w-0 flex-1 text-right font-semibold">{formatIDR(value)}</span>
       </div>

@@ -2,6 +2,7 @@
 
 import { useEffect, useLayoutEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { markMoved } from "@/lib/nav-history";
 
 const OUT_MS = 320;
 const IN_MS = 420;
@@ -68,6 +69,7 @@ export function RouteTransition() {
       first.current = false;
       return;
     }
+    markMoved();
     if (reduced()) return;
     if (phase.current === "waiting" || phase.current === "idle") enter();
     // eslint-disable-next-line react-hooks/exhaustive-deps

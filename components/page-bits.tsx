@@ -3,16 +3,17 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { CaretLeftIcon } from "@phosphor-icons/react";
+import { CaretLeftIcon, CaretRightIcon, type Icon } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
+import { hasMoved } from "@/lib/nav-history";
 import { cn } from "@/lib/utils";
 
 /**
  * Same title position on every page: the title row is always 44px tall and
  * centered, the subtitle hangs below it, and spacing below comes from the page grid.
  */
-/** Goes to the page you came from, or Home if there is none. */
-function BackButton() {
+/** Goes to the page you came from. With no earlier page (opened directly), it goes to the fallback. */
+function BackButton({ fallback = "/" }: { fallback?: string }) {
   const router = useRouter();
   return (
     <Button
@@ -21,7 +22,7 @@ function BackButton() {
       size="icon-lg"
       className="size-11 shrink-0 rounded-full"
       aria-label="Back"
-      onClick={() => (window.history.length > 1 ? router.back() : router.push("/"))}
+      onClick={() => (hasMoved() ? router.back() : router.push(fallback))}
     >
       <CaretLeftIcon className="size-5" weight="bold" />
     </Button>
@@ -54,15 +55,7 @@ export function PageHeader({
       )}
     >
       <div className="flex min-h-11 items-center gap-3">
-        {back === "history" ? (
-          <BackButton />
-        ) : back ? (
-          <Button asChild variant="secondary" size="icon-lg" className="size-11 shrink-0 rounded-full">
-            <Link href={back} aria-label="Back">
-              <CaretLeftIcon className="size-5" weight="bold" />
-            </Link>
-          </Button>
-        ) : null}
+        {back && <BackButton fallback={back === "history" ? "/" : back} />}
         <h1 className="min-w-0 flex-1 truncate text-xl font-extrabold tracking-tight md:text-2xl lg:text-3xl">
           {title}
         </h1>
@@ -97,17 +90,50 @@ export function SectionTitle({
   children,
   action,
   id,
+  icon,
 }: {
   children: ReactNode;
   action?: ReactNode;
   id?: string;
+  /** A Phosphor icon shown before the title, same look as the card titles. */
+  icon?: ReactNode;
 }) {
   return (
     <div className="mb-4 flex items-center justify-between gap-2">
-      <h2 id={id} className="text-lg font-bold">
+      <h2 id={id} className="flex items-center gap-2 font-bold">
+        {icon}
         {children}
       </h2>
       {action}
+    </div>
+  );
+}
+
+/** The title row of every card: icon, title, and an optional link. Same height and gap everywhere. */
+export function CardTitle({
+  icon: IconComponent,
+  children,
+  href,
+  linkLabel,
+  id,
+}: {
+  icon: Icon;
+  children: ReactNode;
+  href?: string;
+  linkLabel?: string;
+  id?: string;
+}) {
+  return (
+    <div className="flex min-h-6 items-center justify-between gap-2">
+      <h2 id={id} className="flex items-center gap-2 font-bold">
+        <IconComponent className="size-5 text-muted-foreground" weight="duotone" /> {children}
+      </h2>
+      {href && (
+        // Padding with an equal negative margin: a big tap area that does not change the row height.
+        <Link href={href} className="-my-3 flex items-center gap-1 py-3 text-sm font-semibold text-primary">
+          {linkLabel} <CaretRightIcon className="size-4" />
+        </Link>
+      )}
     </div>
   );
 }

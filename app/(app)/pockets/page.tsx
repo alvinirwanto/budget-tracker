@@ -91,7 +91,7 @@ export default function PocketsPage() {
           {groups.map((g) => (
             <section key={g.kind} aria-labelledby={`kind-${g.kind}`}>
               <SectionTitle id={`kind-${g.kind}`}>{POCKET_LABELS[g.kind]}</SectionTitle>
-              <ul className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-4">
+              <ul className="grid grid-cols-1 gap-3 min-[440px]:grid-cols-2 md:grid-cols-3 md:gap-4 lg:grid-cols-4">
                 {g.pockets.map((p) => (
                   <li key={p.id}>
                     <button

@@ -3,7 +3,7 @@
 import { Controller, useForm, type Resolver } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { toast } from "sonner";
-import { TrashIcon } from "@phosphor-icons/react";
+import { TrashIcon, ArrowRightIcon } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { CategorySelect } from "@/components/category-select";
@@ -235,7 +235,8 @@ export function TransactionForm({
                 {amount ? (
                   <>
                     {" "}
-                    → <span className="money font-bold">{over ? `over by ${formatIDR(-after)}` : `${formatIDR(after)} left after this`}</span>
+                    <ArrowRightIcon aria-hidden className="inline size-3.5 align-[-2px]" weight="bold" />{" "}
+                    <span className="money font-bold">{over ? `over by ${formatIDR(-after)}` : `${formatIDR(after)} left after this`}</span>
                   </>
                 ) : null}
               </li>

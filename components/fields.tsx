@@ -77,7 +77,7 @@ export function MoneyInput({
       <span
         aria-hidden
         className={cn(
-          "pointer-events-none absolute inset-y-0 left-4 flex items-center text-muted-foreground",
+          "money pointer-events-none absolute inset-y-0 left-4 flex items-center text-muted-foreground",
           hero ? "text-xl font-semibold" : "left-3.5 text-base",
         )}
       >

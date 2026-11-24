@@ -59,7 +59,7 @@ export function AccountCard() {
         </div>
 
         {legacy && (
-          <div className="grid gap-3 rounded-2xl bg-accent p-4" role="status">
+          <div className="grid gap-3 rounded-lg bg-accent p-4" role="status">
             <p className="text-sm leading-relaxed text-accent-foreground">
               <span className="font-semibold">Found data saved in this browser</span> from before accounts. Move it to
               your account? This replaces what your account has now.
