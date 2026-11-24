@@ -217,7 +217,7 @@ function HomeView({ state }: { state: AppState }) {
           <h2 className="flex items-center gap-2 font-bold">
             <LightbulbIcon className="size-5 text-muted-foreground" weight="duotone" /> Insight
           </h2>
-          <p data-fit="2" className="text-sm leading-relaxed text-muted-foreground">
+          <p data-fit="2" className="min-h-[2lh] text-sm leading-relaxed text-muted-foreground">
             {week.income === 0 && week.expense === 0
               ? "Nothing recorded this week yet."
               : weekNet >= 0

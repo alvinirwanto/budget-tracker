@@ -86,4 +86,4 @@ export function useScheme(): Scheme {
  * Runs in the <head> before the first paint so the saved choice never flashes the wrong theme.
  * It creates the meta tag itself, so it never depends on where React puts a tag.
  */
-export const NO_FLASH_SCRIPT = `try{var s=localStorage.getItem("${KEY}");var m=document.createElement("meta");m.name="color-scheme";m.content=s==="dark"?"dark":s==="system"?"light dark":"light";document.head.appendChild(m);var d=s==="dark"||(s==="system"&&matchMedia("(prefers-color-scheme: dark)").matches);document.querySelectorAll('meta[name="theme-color"]').forEach(function(t){t.content=d?"#0a0e15":"#f7f8fa"})}catch(e){}`;
+export const NO_FLASH_SCRIPT = `try{var s=localStorage.getItem("${KEY}");var m=document.createElement("meta");m.name="color-scheme";m.content=s==="dark"?"dark":s==="system"?"light dark":"light";document.head.appendChild(m);var d=s==="dark"||(s==="system"&&matchMedia("(prefers-color-scheme: dark)").matches);var c=document.createElement("meta");c.name="theme-color";c.content=d?"#0a0e15":"#f7f8fa";document.head.appendChild(c)}catch(e){}`;

@@ -9,11 +9,22 @@ import { EmptyState, PageHeader, Skeleton } from "@/components/page-bits";
 import { MoneyText } from "@/components/money-text";
 import { PocketCard } from "@/components/pocket-card";
 import { PocketForm } from "@/components/pocket-form";
+import { Card, SectionTitle } from "@/components/page-bits";
+import { Donut } from "@/components/visuals";
 import { Sheet } from "@/components/sheet";
 import { actions, useAppState } from "@/lib/store";
 import { pocketBalances } from "@/lib/stats";
 import { formatIDR } from "@/lib/format";
-import type { Pocket } from "@/lib/types";
+import { POCKET_LABELS } from "@/lib/icons";
+import type { Pocket, PocketKind } from "@/lib/types";
+
+const KINDS: PocketKind[] = ["cash", "bank", "ewallet", "asset"];
+const KIND_COLORS: Record<PocketKind, string> = {
+  cash: "var(--chart-1)",
+  bank: "var(--chart-3)",
+  ewallet: "var(--chart-4)",
+  asset: "var(--chart-2)",
+};
 
 export default function PocketsPage() {
   const state = useAppState();
@@ -23,6 +34,14 @@ export default function PocketsPage() {
 
   if (!state.hydrated) return <Skeleton />;
   const total = [...balances.values()].reduce((a, b) => a + b, 0);
+  const groups = KINDS.map((kind) => {
+    const pockets = state.pockets.filter((p) => p.kind === kind);
+    const sum = pockets.reduce((a, p) => a + Math.max(0, balances.get(p.id) ?? 0), 0);
+    return { kind, pockets, sum };
+  }).filter((g) => g.pockets.length > 0);
+  // Gold and assets are left out of the doughnut: they are always the biggest and hide the rest.
+  const shown = groups.filter((g) => g.kind !== "asset");
+  const whole = shown.reduce((a, g) => a + g.sum, 0);
 
   return (
     <div className="grid gap-6">
@@ -51,20 +70,44 @@ export default function PocketsPage() {
           action={<Button className="h-11 rounded-full px-5" onClick={() => setEditing({ n: Date.now() })}>Add pocket</Button>}
         />
       ) : (
-        <ul className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-4">
-          {state.pockets.map((p) => (
-            <li key={p.id}>
-              <button
-                type="button"
-                onClick={() => setEditing({ pocket: p, n: Date.now() })}
-                className="block h-full w-full rounded-2xl text-left focus-visible:outline-3 focus-visible:outline-ring"
-                aria-label={`Edit ${p.name}, ${formatIDR(balances.get(p.id) ?? 0)}`}
-              >
-                <PocketCard pocket={p} balance={balances.get(p.id) ?? 0} className="h-full w-full" />
-              </button>
-            </li>
+        <>
+          {whole > 0 && (
+            <Card className="flex items-center gap-5 md:gap-8 md:p-6">
+              <Donut
+                slices={shown.map((g) => ({ value: g.sum, color: KIND_COLORS[g.kind] }))}
+                label={shown.map((g) => `${POCKET_LABELS[g.kind]} ${Math.round((g.sum / whole) * 100)}%`).join(", ")}
+              />
+              <ul className="grid min-w-0 flex-1 gap-3">
+                {shown.map((g) => (
+                  <li key={g.kind} className="flex items-center gap-2.5 text-sm">
+                    <i aria-hidden className="size-2.5 shrink-0 rounded-full" style={{ background: KIND_COLORS[g.kind] }} />
+                    <span className="min-w-0 flex-1 truncate text-muted-foreground">{POCKET_LABELS[g.kind]}</span>
+                    <span className="money font-bold">{Math.round((g.sum / whole) * 100)}%</span>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          )}
+          {groups.map((g) => (
+            <section key={g.kind} aria-labelledby={`kind-${g.kind}`}>
+              <SectionTitle id={`kind-${g.kind}`}>{POCKET_LABELS[g.kind]}</SectionTitle>
+              <ul className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-4">
+                {g.pockets.map((p) => (
+                  <li key={p.id}>
+                    <button
+                      type="button"
+                      onClick={() => setEditing({ pocket: p, n: Date.now() })}
+                      className="block h-full w-full rounded-2xl text-left focus-visible:outline-3 focus-visible:outline-ring"
+                      aria-label={`Edit ${p.name}, ${formatIDR(balances.get(p.id) ?? 0)}`}
+                    >
+                      <PocketCard pocket={p} balance={balances.get(p.id) ?? 0} className="h-full w-full" />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </section>
           ))}
-        </ul>
+        </>
       )}
 
       <Sheet

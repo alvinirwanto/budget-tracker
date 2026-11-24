@@ -91,7 +91,7 @@ export function DailyView({ state }: { state: AppState }) {
                   {busy.has(iso) && (
                     <i
                       aria-hidden
-                      className="absolute -bottom-0.5 size-1.5 rounded-full bg-primary group-data-[state=on]/day:bg-primary-foreground"
+                      className="absolute -bottom-0.5 size-1.5 rounded-full bg-primary group-data-[state=on]/day:hidden"
                     />
                   )}
                 </span>

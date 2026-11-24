@@ -210,3 +210,52 @@ export function RingStat({
     </div>
   );
 }
+
+/** Doughnut cut into slices. Each slice is a share of the whole; the middle stays free for a label. */
+export function Donut({
+  slices,
+  size = 132,
+  stroke = 22,
+  label,
+  children,
+}: {
+  slices: { value: number; color: string }[];
+  size?: number;
+  stroke?: number;
+  label?: string;
+  children?: React.ReactNode;
+}) {
+  const total = slices.reduce((a, s) => a + Math.max(0, s.value), 0);
+  const r = (size - stroke) / 2;
+  const c = 2 * Math.PI * r;
+  const gap = slices.filter((s) => s.value > 0).length > 1 ? 3 : 0; // small space between slices
+  let offset = 0;
+  return (
+    <div className="relative shrink-0" style={{ width: size, height: size }} role="img" aria-label={label}>
+      <svg viewBox={`0 0 ${size} ${size}`} className="size-full -rotate-90" aria-hidden>
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--muted)" strokeWidth={stroke} />
+        {total > 0 &&
+          slices.map((s, i) => {
+            const len = (Math.max(0, s.value) / total) * c;
+            if (len <= 0) return null;
+            const el = (
+              <circle
+                key={i}
+                cx={size / 2}
+                cy={size / 2}
+                r={r}
+                fill="none"
+                stroke={s.color}
+                strokeWidth={stroke}
+                strokeDasharray={`${Math.max(0, len - gap)} ${c}`}
+                strokeDashoffset={-offset}
+              />
+            );
+            offset += len;
+            return el;
+          })}
+      </svg>
+      {children && <div className="absolute inset-0 grid place-items-center text-center">{children}</div>}
+    </div>
+  );
+}

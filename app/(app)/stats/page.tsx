@@ -62,9 +62,10 @@ function StatsView({ state }: { state: AppState }) {
   const net = sum.income - sum.expense;
 
   useEffect(() => {
-    chipsRef.current
-      ?.querySelector<HTMLElement>('[data-state="on"]')
-      ?.scrollIntoView({ inline: "center", block: "nearest" });
+    // Slide only the month strip. scrollIntoView would also scroll the whole page.
+    const box = chipsRef.current;
+    const chip = box?.querySelector<HTMLElement>('[data-state="on"]');
+    if (box && chip) box.scrollLeft = chip.offsetLeft - (box.clientWidth - chip.offsetWidth) / 2;
   }, [month, year]);
 
   const points = series.map((p) => ({ label: formatDate(p.date, "d MMM"), value: p.net }));
@@ -75,6 +76,32 @@ function StatsView({ state }: { state: AppState }) {
       <PageHeader
         title="Statistics"
         subtitle="How your month is going"
+        tabs={
+  <div ref={chipsRef} className="-mx-4 overflow-x-auto px-4 [scrollbar-width:none] md:mx-0 md:px-0">
+    <ToggleGroup
+      type="single"
+      value={String(month)}
+      onValueChange={(v) => {
+        if (!v) return;
+        setAnchor((a) => setMonth(a, Number(v)));
+        setPick(null);
+      }}
+      aria-label="Month"
+      spacing={2}
+      className="w-max"
+    >
+      {Array.from({ length: 12 }, (_, i) => (
+        <ToggleGroupItem
+          key={i}
+          value={String(i)}
+          className="h-11 min-w-14 rounded-full bg-card px-3 text-sm font-semibold shadow-xs hover:bg-card data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+        >
+          {format(setMonth(new Date(2000, 0, 1), i), "MMM")}
+        </ToggleGroupItem>
+      ))}
+    </ToggleGroup>
+  </div>
+        }
         action={
           <Select
             value={String(year)}
@@ -96,31 +123,6 @@ function StatsView({ state }: { state: AppState }) {
           </Select>
         }
       />
-
-      <div ref={chipsRef} className="-mx-4 overflow-x-auto px-4 pb-1 [scrollbar-width:none] md:mx-0 md:px-0">
-        <ToggleGroup
-          type="single"
-          value={String(month)}
-          onValueChange={(v) => {
-            if (!v) return;
-            setAnchor((a) => setMonth(a, Number(v)));
-            setPick(null);
-          }}
-          aria-label="Month"
-          spacing={2}
-          className="w-max"
-        >
-          {Array.from({ length: 12 }, (_, i) => (
-            <ToggleGroupItem
-              key={i}
-              value={String(i)}
-              className="h-11 min-w-14 rounded-xl bg-card px-3 text-sm font-semibold shadow-xs hover:bg-card data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-            >
-              {format(setMonth(new Date(2000, 0, 1), i), "MMM")}
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup>
-      </div>
 
       <Card className="grid gap-5 md:p-6">
         <div>
@@ -149,18 +151,18 @@ function StatsView({ state }: { state: AppState }) {
         <p data-fit className="text-sm text-muted-foreground" aria-live="polite">
           {formatDate(series[active].date, "EEEE d MMM")}: spent{" "}
           <span className="money font-semibold text-foreground">{formatIDR(series[active].expense)}</span>, earned{" "}
-          <span className="money font-semibold text-foreground">{formatIDR(series[active].income)}</span>
+          <span className="money font-semibold text-income">{formatIDR(series[active].income)}</span>
         </p>
       </Card>
 
       <div className="grid grid-cols-2 gap-4">
         <Card className="grid gap-5">
-          <span aria-hidden className="grid size-11 place-items-center rounded-full bg-sky-400 text-white">
+          <span aria-hidden className="grid size-11 place-items-center rounded-full bg-income text-white">
             <ArrowDownLeftIcon className="size-5" weight="bold" />
           </span>
           <div>
             <p className="text-sm text-muted-foreground">Income</p>
-            <p className="money mt-1 text-xl font-extrabold">{formatIDR(sum.income)}</p>
+            <p className="money mt-1 text-xl font-extrabold text-income">{formatIDR(sum.income)}</p>
           </div>
         </Card>
         <Card className="grid gap-5">
