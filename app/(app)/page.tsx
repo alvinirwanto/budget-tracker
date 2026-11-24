@@ -123,12 +123,12 @@ function HomeView({ state }: { state: AppState }) {
             </h2>
             <NotificationBell state={state} />
           </div>
-          <p className="money-lg text-5xl leading-none font-extrabold md:text-7xl">{formatIDR(total)}</p>
+          <p className="money-lg text-[2.6rem] leading-none font-extrabold md:text-7xl">{formatIDR(total)}</p>
 
           <div
             role="img"
             aria-label={`${Math.round(spendShare * 100)}% spendable, ${Math.round((1 - spendShare) * 100)}% gold and assets`}
-            className="flex h-3 gap-1 overflow-hidden rounded-full"
+            className="flex h-5 gap-1 overflow-hidden rounded-full border border-border/50 bg-muted p-1"
           >
             <div className="h-full rounded-full bg-primary" style={{ width: `${spendShare * 100}%` }} />
             {assets > 0 && <div className="h-full flex-1 rounded-full bg-amber-400" />}
