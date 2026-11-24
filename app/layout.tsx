@@ -33,6 +33,11 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
+  // Matches the page in light and dark. The inline script then follows the in-app choice.
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f7f8fa" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a0e15" },
+  ],
   // The on-screen keyboard shrinks the page (instead of covering it), so fixed bars and sheets stay above it.
   interactiveWidget: "resizes-content",
 };
