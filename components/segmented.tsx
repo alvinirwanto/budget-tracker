@@ -30,7 +30,7 @@ export function Segmented<T extends string>({
       onValueChange={(v) => v && onChange(v as T)}
       aria-label={label}
       spacing={0}
-      className={cn("relative w-full rounded-full bg-[light-dark(#e3e6ed,#2b3240)] p-1.5", className)}
+      className={cn("relative w-full rounded-full bg-muted p-1.5", className)}
     >
       {index >= 0 && (
         <span

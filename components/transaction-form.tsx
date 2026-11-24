@@ -124,6 +124,7 @@ export function TransactionForm({
               field.onChange(v);
               setValue("categoryId", "", { shouldValidate: false });
             }}
+            className="bg-background"
           />
         )}
       />

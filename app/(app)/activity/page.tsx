@@ -150,7 +150,7 @@ function AllView({ state }: { state: AppState }) {
           />
         </div>
         <Segmented
-          className="lg:w-96"
+          className="bg-[light-dark(#e3e6ed,#2b3240)] lg:w-96"
           label="Filter by type"
           value={typeFilter}
           onChange={(v) => {
@@ -305,7 +305,7 @@ export default function ActivityPage() {
             label="View"
             value={mode}
             onChange={setMode}
-            className="lg:max-w-xs"
+            className="bg-[light-dark(#e3e6ed,#2b3240)] lg:max-w-xs"
             options={[
               { value: "daily", label: "Daily" },
               { value: "all", label: "All" },

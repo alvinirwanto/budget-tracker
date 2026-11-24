@@ -155,7 +155,7 @@ function BottomNav({ onAdd }: { onAdd: () => void }) {
                   active ? "text-primary" : "text-muted-foreground hover:text-foreground",
                 )}
               >
-                <n.Icon className="size-[22px]" weight="bold" />
+                <n.Icon className="size-[22px]" weight="duotone" />
                 {n.label}
               </Link>
             </li>

@@ -100,6 +100,7 @@ export function BillForm({
                 { value: "monthly", label: "Every month" },
                 { value: "once", label: "Just once" },
               ]}
+              className="bg-background"
             />
           )}
         />

@@ -200,6 +200,7 @@ export function DataTransfer() {
                   { value: "add", label: "Add to my data" },
                   { value: "replace", label: "Replace all" },
                 ]}
+                className="bg-background"
               />
               <p className="text-sm leading-relaxed text-muted-foreground">
                 {mode === "add"

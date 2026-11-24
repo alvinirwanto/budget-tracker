@@ -56,6 +56,7 @@ function View({ state, initialTab }: { state: AppState; initialTab: "alerts" | "
             label="Reminders view"
             value={tab}
             onChange={setTab}
+            className="bg-[light-dark(#e3e6ed,#2b3240)]"
             options={[
               { value: "alerts", label: unread ? `Notifications (${unread})` : "Notifications" },
               { value: "bills", label: "Bills" },
