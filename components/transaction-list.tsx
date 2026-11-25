@@ -31,7 +31,7 @@ export function Amount({ t, className }: { t: Transaction; className?: string })
       className={cn(
         "money max-w-[55%] whitespace-nowrap font-bold",
         t.type === "income" && "text-income",
-        t.type === "expense" && "text-foreground",
+        t.type === "expense" && "text-expense",
         t.type === "transfer" && "text-muted-foreground",
         className,
       )}

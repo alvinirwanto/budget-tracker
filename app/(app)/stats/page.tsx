@@ -150,7 +150,7 @@ function StatsView({ state }: { state: AppState }) {
         </div>
         <p data-fit className="text-sm text-muted-foreground" aria-live="polite">
           {formatDate(series[active].date, "EEEE d MMM")}: spent{" "}
-          <span className="money font-semibold text-foreground">{formatIDR(series[active].expense)}</span>, earned{" "}
+          <span className="money font-semibold text-expense">{formatIDR(series[active].expense)}</span>, earned{" "}
           <span className="money font-semibold text-income">{formatIDR(series[active].income)}</span>
         </p>
       </Card>
@@ -166,12 +166,12 @@ function StatsView({ state }: { state: AppState }) {
           </div>
         </Card>
         <Card className="grid gap-5">
-          <span aria-hidden className="grid size-11 place-items-center rounded-full bg-red-500 text-white">
+          <span aria-hidden className="grid size-11 place-items-center rounded-full bg-expense text-white">
             <ArrowUpRightIcon className="size-5" weight="bold" />
           </span>
           <div>
             <p className="text-sm text-muted-foreground">Expense</p>
-            <p className="money mt-1 text-xl font-extrabold">{formatIDR(sum.expense)}</p>
+            <p className="money mt-1 text-xl font-extrabold text-expense">{formatIDR(sum.expense)}</p>
           </div>
         </Card>
       </div>

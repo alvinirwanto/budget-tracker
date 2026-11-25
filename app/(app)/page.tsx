@@ -123,20 +123,20 @@ function HomeView({ state }: { state: AppState }) {
             </h2>
             <NotificationBell state={state} />
           </div>
-          <p className="money-lg text-[2.6rem] leading-none font-extrabold md:text-7xl">{formatIDR(total)}</p>
+          <p className="money-lg text-[2.6rem] leading-none font-semibold md:text-7xl">{formatIDR(total)}</p>
 
           <div
             role="img"
             aria-label={`${Math.round(spendShare * 100)}% spendable, ${Math.round((1 - spendShare) * 100)}% gold and assets`}
             className="-mt-2 flex h-5 gap-1 overflow-hidden rounded-full border border-border/50 bg-muted p-1 dark:border-white/15 dark:bg-[#323a4a]"
           >
-            <div className="h-full rounded-full bg-primary" style={{ width: `${spendShare * 100}%` }} />
+            <div className="h-full rounded-full bg-sky-500" style={{ width: `${spendShare * 100}%` }} />
             {assets > 0 && <div className="h-full flex-1 rounded-full bg-amber-400" />}
           </div>
 
           <ul className="grid gap-2 border-t pt-4 text-sm">
             <li className="flex items-center gap-2.5">
-              <i aria-hidden className="size-2.5 rounded-full bg-primary" />
+              <i aria-hidden className="size-2.5 rounded-full bg-sky-500" />
               <span className="shrink-0 text-muted-foreground">Spendable</span>
               <span className="money ml-auto min-w-0 flex-1 text-right text-base font-bold">{formatIDR(total - assets)}</span>
             </li>
@@ -199,10 +199,10 @@ function HomeView({ state }: { state: AppState }) {
 
           <p className="flex items-center justify-center gap-5 text-sm font-medium">
             <span className="flex items-center gap-2">
-              <i className="size-2.5 rounded-full bg-income/50" /> Income
+              <i className="size-2.5 rounded-full bg-income" /> Income
             </span>
             <span className="flex items-center gap-2">
-              <i className="size-2.5 rounded-full bg-primary" /> Expense
+              <i className="size-2.5 rounded-full bg-expense" /> Expense
             </span>
           </p>
         </Card>
@@ -211,8 +211,8 @@ function HomeView({ state }: { state: AppState }) {
       <div className="grid content-start gap-5 lg:col-span-4">
         <Card className="px-4 py-1.5 md:px-5">
           <ul className="divide-y">
-            <TotalRow label="Income" amount={sum.income} dot="bg-income" />
-            <TotalRow label="Expense" amount={sum.expense} dot="bg-primary" />
+            <TotalRow label="Income" amount={sum.income} dot="bg-income" tone="text-income" />
+            <TotalRow label="Expense" amount={sum.expense} dot="bg-expense" tone="text-expense" />
             <TotalRow label="Left for saving" amount={left} dot="bg-foreground" negative={left < 0} />
           </ul>
         </Card>
@@ -323,7 +323,7 @@ function HomeView({ state }: { state: AppState }) {
           <CardTitle icon={MoneyIcon} href="/stats" linkLabel="Statistics">
             Expense summary
           </CardTitle>
-          <p className="money-lg text-3xl md:text-4xl font-bold">{formatIDR(sum.expense)}</p>
+          <p className="money-lg text-3xl font-bold text-expense md:text-4xl">{formatIDR(sum.expense)}</p>
           {delta !== null ? (
             <p
               className={cn(
@@ -372,11 +372,13 @@ function TotalRow({
   amount,
   dot,
   negative,
+  tone,
 }: {
   label: string;
   amount: number;
   dot: string;
   negative?: boolean;
+  tone?: string;
 }) {
   return (
     <li>
@@ -386,7 +388,7 @@ function TotalRow({
       >
         <i aria-hidden className={cn("size-2.5 rounded-full", dot)} />
         <span className="shrink-0 font-semibold">{label}</span>
-        <span className={cn("money min-w-0 flex-1 text-right font-bold", negative && "text-expense")}>{formatIDR(amount)}</span>
+        <span className={cn("money min-w-0 flex-1 text-right font-bold", tone, negative && "text-expense")}>{formatIDR(amount)}</span>
         <CaretRightIcon className="size-4 text-muted-foreground" />
       </Link>
     </li>
@@ -410,7 +412,7 @@ function CompareBar({
         <span className="shrink-0 text-muted-foreground">{label}</span>
         <span className="money min-w-0 flex-1 text-right font-semibold">{formatIDR(value)}</span>
       </div>
-      <Progress value={max ? value / max : 0} color={muted ? "var(--lime)" : "var(--primary)"} />
+      <Progress value={max ? value / max : 0} color={muted ? "var(--lime)" : "var(--expense)"} />
     </div>
   );
 }

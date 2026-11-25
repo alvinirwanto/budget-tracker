@@ -130,7 +130,7 @@ function niceMax(v: number) {
   return nice * exp;
 }
 
-/** Income (light lime) and spending (deep green) bars on a shared axis with grid lines. */
+/** Income (green) and spending (red) bars on a shared axis with grid lines. */
 export function BarChart({ data, labelEvery = 1 }: { data: Bucket[]; labelEvery?: number }) {
   // Axis follows spending; a big income day is capped at the top so spending stays readable.
   const top = niceMax(Math.max(...data.map((d) => d.expense), 0));
@@ -167,11 +167,11 @@ export function BarChart({ data, labelEvery = 1 }: { data: Bucket[]; labelEvery?
                   )}
                 >
                   <div
-                    className="absolute inset-x-0 bottom-0 rounded-full bg-income/40 transition-[height] duration-500 motion-reduce:transition-none"
+                    className="absolute inset-x-0 bottom-0 rounded-full bg-income transition-[height] duration-500 motion-reduce:transition-none"
                     style={{ height: `${Math.min(1, d.income / top) * 100}%`, minHeight: d.income ? 6 : 0 }}
                   />
                   <div
-                    className="relative w-full rounded-full bg-primary transition-[height] duration-500 motion-reduce:transition-none"
+                    className="relative w-full rounded-full bg-expense transition-[height] duration-500 motion-reduce:transition-none"
                     style={{ height: `${Math.min(1, d.expense / top) * 100}%`, minHeight: d.expense ? 6 : 0 }}
                   />
                 </div>

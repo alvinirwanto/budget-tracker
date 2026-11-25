@@ -20,8 +20,9 @@ import { Segmented } from "@/components/segmented";
 import { AccountCard } from "@/components/account-card";
 import { DataTransfer } from "@/components/data-transfer";
 import { actions, useAppState } from "@/lib/store";
-import { ACCENTS, setAccent, setScheme, useAccent, useScheme, type Scheme } from "@/lib/theme";
-import { CheckIcon } from "@phosphor-icons/react";
+import { ACCENTS, isCustom, setAccent, setScheme, toHex, useAccent, useScheme, type Scheme } from "@/lib/theme";
+import { CheckIcon, PlusIcon } from "@phosphor-icons/react";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 const SCHEMES: { value: Scheme; label: string; Icon: Icon }[] = [
@@ -33,6 +34,9 @@ const SCHEMES: { value: Scheme; label: string; Icon: Icon }[] = [
 export default function ProfilePage() {
   const scheme = useScheme();
   const accent = useAccent();
+  const custom = isCustom(accent);
+  const [typeColor, setTypeColor] = useState(false);
+  const [hex, setHex] = useState(() => (isCustom(accent) ? accent : ""));
   const state = useAppState();
   const [confirm, setConfirm] = useState<"reset" | "sample" | null>(null);
 
@@ -55,30 +59,81 @@ export default function ProfilePage() {
             System follows your phone or computer setting
             and changes with it.
           </p>
-          <div role="radiogroup" aria-label="Accent color" className="grid grid-cols-4 gap-3 border-t pt-4">
+          <div role="radiogroup" aria-label="Accent color" className="grid grid-cols-5 gap-x-2 gap-y-3 border-t pt-4">
             {ACCENTS.map((a) => (
               <button
                 key={a.value}
                 type="button"
                 role="radio"
                 aria-checked={accent === a.value}
-                onClick={() => setAccent(a.value)}
-                className="grid justify-items-center gap-1.5 rounded-lg py-1 text-xs font-semibold focus-visible:outline-3 focus-visible:outline-ring"
+                aria-label={a.label}
+                onClick={() => {
+                  setTypeColor(false);
+                  setAccent(a.value);
+                }}
+                className="grid justify-items-center gap-1.5 rounded-lg py-1 text-[11px] font-semibold focus-visible:outline-3 focus-visible:outline-ring"
               >
                 <span
                   aria-hidden
                   style={{ backgroundColor: a.swatch }}
                   className={cn(
-                    "grid size-11 place-items-center rounded-full text-white ring-offset-2 ring-offset-card transition-shadow",
+                    "grid size-11 place-items-center rounded-full ring-offset-2 ring-offset-card transition-shadow",
                     accent === a.value && "ring-2 ring-foreground",
                   )}
                 >
-                  {accent === a.value && <CheckIcon className="size-5 text-black/70" weight="bold" />}
+                  {accent === a.value && <CheckIcon className="size-5 text-white mix-blend-difference" weight="bold" />}
                 </span>
                 {a.label}
               </button>
             ))}
+            <button
+              type="button"
+              role="radio"
+              aria-checked={custom}
+              aria-label="Your own color"
+              onClick={() => setTypeColor(true)}
+              className="grid justify-items-center gap-1.5 rounded-lg py-1 text-[11px] font-semibold focus-visible:outline-3 focus-visible:outline-ring"
+            >
+              <span
+                aria-hidden
+                style={custom ? { backgroundColor: accent } : undefined}
+                className={cn(
+                  "grid size-11 place-items-center rounded-full border border-dashed text-muted-foreground ring-offset-2 ring-offset-card",
+                  custom ? "border-solid ring-2 ring-foreground" : typeColor && "border-primary text-primary",
+                )}
+              >
+                {custom ? (
+                  <CheckIcon className="size-5 text-white mix-blend-difference" weight="bold" />
+                ) : (
+                  <PlusIcon className="size-5" weight="bold" />
+                )}
+              </span>
+              Custom
+            </button>
           </div>
+          {(typeColor || custom) && (
+            <div className="flex items-center gap-3">
+              <span
+                aria-hidden
+                className="size-11 shrink-0 rounded-full border"
+                style={{ background: toHex(hex) ?? (custom ? accent : "transparent") }}
+              />
+              <Input
+                aria-label="Hex color"
+                placeholder="#ff6600"
+                autoComplete="off"
+                autoCapitalize="none"
+                spellCheck={false}
+                maxLength={7}
+                value={hex || (custom ? accent : "")}
+                onChange={(e) => {
+                  setHex(e.target.value);
+                  const ok = toHex(e.target.value);
+                  if (ok) setAccent(ok);
+                }}
+              />
+            </div>
+          )}
         </Card>
       </section>
 

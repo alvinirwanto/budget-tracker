@@ -86,9 +86,9 @@ export function useScheme(): Scheme {
  * Runs in the <head> before the first paint so the saved choice never flashes the wrong theme.
  * It creates the meta tag itself, so it never depends on where React puts a tag.
  */
-export const NO_FLASH_SCRIPT = `try{var s=localStorage.getItem("${KEY}");var m=document.createElement("meta");m.name="color-scheme";m.content=s==="dark"?"dark":s==="system"?"light dark":"light";document.head.appendChild(m);var d=s==="dark"||(s==="system"&&matchMedia("(prefers-color-scheme: dark)").matches);var c=document.createElement("meta");c.name="theme-color";c.content=d?"#0a0e15":"#f7f8fa";document.head.appendChild(c);var a=localStorage.getItem("accent");if(a)document.documentElement.setAttribute("data-accent",a)}catch(e){}`;
+export const NO_FLASH_SCRIPT = `try{var s=localStorage.getItem("${KEY}");var m=document.createElement("meta");m.name="color-scheme";m.content=s==="dark"?"dark":s==="system"?"light dark":"light";document.head.appendChild(m);var d=s==="dark"||(s==="system"&&matchMedia("(prefers-color-scheme: dark)").matches);var c=document.createElement("meta");c.name="theme-color";c.content=d?"#0a0e15":"#f7f8fa";document.head.appendChild(c);var a=localStorage.getItem("accent");if(a){var r=document.documentElement;if(/^#[0-9a-f]{6}$/i.test(a)){var n=parseInt(a.slice(1),16),l=(0.299*(n>>16)+0.587*((n>>8)&255)+0.114*(n&255))/255;r.setAttribute("data-accent","custom");r.style.setProperty("--primary",a);r.style.setProperty("--ring",a);r.style.setProperty("--chart-3",a);r.style.setProperty("--primary-foreground",l>0.6?"#0a0e15":"#ffffff")}else r.setAttribute("data-accent",a)}}catch(e){}`;
 
-/** Accent colors. The values live in globals.css under [data-accent]; swatch is only for the picker. */
+/** Accent colors. The preset values live in globals.css under [data-accent]; swatch is only for the picker. */
 export const ACCENTS = [
   { value: "pink", label: "Pink", swatch: "#ff3378" },
   { value: "lavender", label: "Lavender", swatch: "#8b6ff0" },
@@ -98,18 +98,51 @@ export const ACCENTS = [
   { value: "sunset", label: "Sunset", swatch: "#ff7a1a" },
   { value: "crimson", label: "Crimson", swatch: "#e11d48" },
   { value: "gold", label: "Gold", swatch: "#e5a400" },
+  { value: "graphite", label: "Graphite", swatch: "#475569" },
 ] as const;
-export type Accent = (typeof ACCENTS)[number]["value"];
+export type Preset = (typeof ACCENTS)[number]["value"];
+/** A preset name, or your own color as "#rrggbb". */
+export type Accent = Preset | (string & {});
 const ACCENT_KEY = "accent";
 const accentListeners = new Set<() => void>();
 let accent: Accent | null = null;
 
+const HEX = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i;
+/** "f39" or "#FF3399" -> "#ff3399", or null. */
+export function toHex(v: string): string | null {
+  const m = HEX.exec(v.trim());
+  if (!m) return null;
+  const h = m[1].toLowerCase();
+  return "#" + (h.length === 3 ? [...h].map((c) => c + c).join("") : h);
+}
+export const isCustom = (a: string) => a.startsWith("#");
+
 function readAccent(): Accent {
   try {
-    const v = localStorage.getItem(ACCENT_KEY);
-    return ACCENTS.some((a) => a.value === v) ? (v as Accent) : "pink";
+    const v = localStorage.getItem(ACCENT_KEY) ?? "";
+    if (ACCENTS.some((a) => a.value === v)) return v;
+    return toHex(v) ?? "pink";
   } catch {
     return "pink";
+  }
+}
+
+const VARS = ["--primary", "--primary-foreground", "--ring", "--chart-3"] as const;
+
+function paint(next: Accent) {
+  const root = document.documentElement;
+  if (isCustom(next)) {
+    // Text on top of the color: dark on light colors, white on dark ones.
+    const n = parseInt(next.slice(1), 16);
+    const lum = (0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) / 255;
+    root.dataset.accent = "custom";
+    root.style.setProperty("--primary", next);
+    root.style.setProperty("--ring", next);
+    root.style.setProperty("--chart-3", next);
+    root.style.setProperty("--primary-foreground", lum > 0.6 ? "#0a0e15" : "#ffffff");
+  } else {
+    root.dataset.accent = next;
+    VARS.forEach((v) => root.style.removeProperty(v));
   }
 }
 
@@ -120,7 +153,7 @@ export function setAccent(next: Accent) {
   } catch {
     /* still applied for this visit */
   }
-  document.documentElement.dataset.accent = next;
+  paint(next);
   accentListeners.forEach((l) => l());
 }
 
@@ -128,7 +161,7 @@ export function useAccent(): Accent {
   return useSyncExternalStore(
     (cb) => {
       accentListeners.add(cb);
-      document.documentElement.dataset.accent = (accent ??= readAccent());
+      paint((accent ??= readAccent()));
       return () => void accentListeners.delete(cb);
     },
     () => (accent ??= readAccent()),

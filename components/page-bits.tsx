@@ -156,12 +156,71 @@ export function EmptyState({
   );
 }
 
+/** One grey block with a light sweep across it. */
+function Bone({ className, style }: { className?: string; style?: React.CSSProperties }) {
+  return <div aria-hidden style={style} className={cn("skeleton rounded-lg", className)} />;
+}
+
+/** Loading screen that fills the page: header, big card, chart card and list rows. */
 export function Skeleton() {
   return (
-    <div className="grid gap-4" aria-busy="true" aria-label="Loading">
-      <div className="h-8 w-40 animate-pulse rounded-full bg-muted motion-reduce:animate-none" />
-      <div className="h-48 animate-pulse rounded-2xl bg-muted motion-reduce:animate-none" />
-      <div className="h-32 animate-pulse rounded-2xl bg-muted motion-reduce:animate-none" />
+    <div
+      role="status"
+      aria-busy="true"
+      aria-label="Loading"
+      className="flex min-h-[calc(100dvh-8rem)] flex-col gap-6 md:min-h-[calc(100dvh-6rem)]"
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="grid gap-2.5">
+          <Bone className="h-7 w-40 rounded-full" />
+          <Bone className="h-4 w-52 rounded-full" />
+        </div>
+        <Bone className="size-11 rounded-full" />
+      </div>
+
+      <div className="grid gap-4 rounded-2xl bg-card p-4 shadow-card md:p-6 dark:border">
+        <div className="flex items-center justify-between">
+          <Bone className="h-5 w-36 rounded-full" />
+          <Bone className="size-11 rounded-full" />
+        </div>
+        <Bone className="h-11 w-3/4 max-w-sm" />
+        <Bone className="h-5 w-full rounded-full" />
+        <div className="grid gap-3 border-t pt-4">
+          <Bone className="h-4 w-full" />
+          <Bone className="h-4 w-full" />
+        </div>
+      </div>
+
+      <div className="flex flex-1 flex-col gap-5 rounded-2xl bg-card p-4 shadow-card md:p-6 dark:border">
+        <div className="flex items-center justify-between">
+          <Bone className="h-6 w-44 rounded-full" />
+          <div className="flex gap-2">
+            <Bone className="size-11 rounded-full" />
+            <Bone className="size-11 rounded-full" />
+          </div>
+        </div>
+        <Bone className="h-12 w-full rounded-full" />
+        <div className="flex min-h-40 flex-1 items-end justify-between gap-2">
+          {[40, 65, 30, 80, 55, 25, 70, 45, 60, 35].map((h, i) => (
+            <div key={i} className="flex h-full flex-1 items-end">
+              <Bone className="w-full rounded-full" style={{ height: `${h}%` }} />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid gap-4 rounded-2xl bg-card p-4 shadow-card md:p-6 dark:border">
+        {[0, 1, 2].map((i) => (
+          <div key={i} className="flex items-center gap-3">
+            <Bone className="size-11 shrink-0 rounded-full" />
+            <div className="grid flex-1 gap-2">
+              <Bone className="h-4 w-1/2" />
+              <Bone className="h-3.5 w-1/3" />
+            </div>
+            <Bone className="h-5 w-20" />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
