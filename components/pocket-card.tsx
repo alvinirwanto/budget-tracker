@@ -33,7 +33,11 @@ export function PocketCard({
         aria-hidden
         className={cn(
           "grid size-10 place-items-center rounded-full",
-          isAsset ? "bg-amber-400/30 text-amber-700 dark:text-amber-300" : "bg-accent text-primary",
+          isAsset
+            ? "bg-amber-400/30 text-amber-700 dark:text-amber-300"
+            : inset
+              ? "bg-card text-primary"
+              : "bg-accent text-primary",
         )}
       >
         <Icon className="size-5" weight="duotone" />

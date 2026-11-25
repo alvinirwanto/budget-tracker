@@ -240,7 +240,7 @@ function HomeView({ state }: { state: AppState }) {
         <CardTitle id="pockets-title" icon={CoinsIcon} href="/pockets" linkLabel="Manage">
           Pockets
         </CardTitle>
-        <ul className="-mx-4 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 py-1.5 -my-1.5 [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-4 md:overflow-visible md:px-0 xl:grid-cols-5">
+        <ul className="flex snap-x snap-mandatory gap-3 overflow-x-auto [scrollbar-width:none] md:grid md:grid-cols-4 md:overflow-visible xl:grid-cols-5">
           {state.pockets.map((p) => (
             <li key={p.id} className="snap-start">
               <PocketCard inset pocket={p} balance={balances.get(p.id) ?? 0} />
