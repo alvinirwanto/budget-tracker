@@ -50,6 +50,7 @@ export default function ProfilePage() {
   // A custom color in use that is not in the saved list yet.
   const custom = isCustom(accent) && !savedColors.includes(accent);
   const [typeColor, setTypeColor] = useState(false);
+  const [removeColor, setRemoveColor] = useState<string | null>(null);
   const [hex, setHex] = useState(() => (isCustom(accent) ? accent : ""));
   const state = useAppState();
   const [confirm, setConfirm] = useState<"reset" | "sample" | null>(null);
@@ -128,7 +129,7 @@ export default function ProfilePage() {
                 <button
                   type="button"
                   aria-label={`Remove color ${c}`}
-                  onClick={() => removeSavedColor(c)}
+                  onClick={() => setRemoveColor(c)}
                   className="absolute top-0 right-1 grid size-5 place-items-center rounded-full bg-foreground text-background shadow-sm focus-visible:outline-3 focus-visible:outline-ring"
                 >
                   <XIcon className="size-3" weight="bold" />
@@ -250,6 +251,18 @@ export default function ProfilePage() {
           </div>
         </Card>
       </section>
+
+      <ConfirmDialog
+        open={removeColor !== null}
+        onOpenChange={(o) => !o && setRemoveColor(null)}
+        title={`Remove color ${removeColor ?? ""}?`}
+        description={removeColor === accent ? "It is your current color. The app goes back to Pink." : "It leaves your saved colors."}
+        confirmLabel="Remove"
+        onConfirm={() => {
+          if (removeColor) removeSavedColor(removeColor);
+          toast.success("Color removed");
+        }}
+      />
 
       <ConfirmDialog
         open={confirm !== null}

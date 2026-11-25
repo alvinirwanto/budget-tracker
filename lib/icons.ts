@@ -1,3 +1,4 @@
+import { savedList } from "./saved-list";
 import {
   BankIcon,
   BasketIcon,
@@ -90,3 +91,13 @@ export const POCKET_LABELS: Record<PocketKind, string> = {
   ewallet: "E-wallet",
   asset: "Gold / asset",
 };
+
+/** Icons and colors you added to the category form, kept on this device. */
+const icons = savedList("category-icons", (v) => (/^[a-z0-9 _-]{2,30}$/i.test(v.trim()) ? v.trim() : null));
+const colors = savedList("category-colors", normalizeHex);
+export const useSavedIcons = icons.use;
+export const addSavedIcon = icons.add;
+export const removeSavedIcon = icons.remove;
+export const useSavedCategoryColors = colors.use;
+export const addSavedCategoryColor = colors.add;
+export const removeSavedCategoryColor = colors.remove;
