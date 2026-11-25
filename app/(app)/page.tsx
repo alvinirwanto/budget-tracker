@@ -115,7 +115,7 @@ function HomeView({ state }: { state: AppState }) {
           }
         />
 
-      <div className="grid content-start gap-6 lg:col-span-8">
+      <div className="grid content-start gap-6 max-lg:order-1 lg:col-span-8">
         <Card as="section" aria-label="Balance" className="grid gap-5 md:p-6">
           <div className="flex items-center justify-between gap-3">
             <h2 className="flex items-center gap-2 text-base font-semibold">
@@ -208,8 +208,8 @@ function HomeView({ state }: { state: AppState }) {
         </Card>
       </div>
 
-      <div className="grid content-start gap-5 lg:col-span-4">
-        <Card className="px-4 py-1.5 md:px-5">
+      <div className="contents lg:col-span-4 lg:grid lg:content-start lg:gap-5">
+        <Card className="px-4 py-1.5 max-lg:order-2 md:px-5">
           <ul className="divide-y">
             <TotalRow label="Income" amount={sum.income} dot="bg-income" tone="text-income" />
             <TotalRow label="Expense" amount={sum.expense} dot="bg-expense" tone="text-expense" />
@@ -217,7 +217,7 @@ function HomeView({ state }: { state: AppState }) {
           </ul>
         </Card>
 
-        <Card className="grid gap-4">
+        <Card className="grid gap-4 max-lg:order-3">
           <CardTitle icon={LightbulbIcon}>Insight</CardTitle>
           <p data-fit className="text-sm leading-relaxed text-muted-foreground">
             {week.income === 0 && week.expense === 0
@@ -234,13 +234,39 @@ function HomeView({ state }: { state: AppState }) {
             </div>
           </div>
         </Card>
+
+        <Card className="grid content-start gap-5 pb-6 max-lg:order-6 md:pb-7">
+          <CardTitle icon={MoneyIcon} href="/stats" linkLabel="Statistics">
+            Expense summary
+          </CardTitle>
+          <p className="money-lg text-3xl font-bold text-expense md:text-4xl">{formatIDR(sum.expense)}</p>
+          {delta !== null ? (
+            <p
+              className={cn(
+                "flex items-center gap-1.5 text-sm font-semibold",
+                delta > 0 ? "text-expense" : "text-income",
+              )}
+            >
+              {delta > 0 ? <TrendUpIcon className="size-4" weight="bold" /> : <TrendDownIcon className="size-4" weight="bold" />}
+              {delta > 0 ? "+" : ""}
+              {Math.round(delta * 100)}%
+              <span className="font-medium text-muted-foreground">vs last {period}</span>
+            </p>
+          ) : (
+            <p className="text-sm text-muted-foreground">No spending last {period} to compare.</p>
+          )}
+          <div className="grid gap-6 border-t pt-5">
+            <CompareBar label={`Last ${period}`} value={prevSum.expense} max={Math.max(sum.expense, prevSum.expense)} muted />
+            <CompareBar label={`This ${period}`} value={sum.expense} max={Math.max(sum.expense, prevSum.expense)} />
+          </div>
+        </Card>
       </div>
 
-      <Card as="section" aria-labelledby="pockets-title" className="grid gap-4 lg:col-span-12">
+      <Card as="section" aria-labelledby="pockets-title" className="grid gap-4 max-lg:order-4 lg:col-span-12">
         <CardTitle id="pockets-title" icon={CoinsIcon} href="/pockets" linkLabel="Manage">
           Pockets
         </CardTitle>
-        <ul className="flex snap-x snap-mandatory gap-3 overflow-x-auto [scrollbar-width:none] md:grid md:grid-cols-4 md:overflow-visible xl:grid-cols-5">
+        <ul className="flex snap-x snap-mandatory gap-3 overflow-x-auto [scrollbar-width:none] md:grid md:grid-cols-4 md:overflow-visible xl:grid-cols-5 [&_li>div]:md:w-full">
           {state.pockets.map((p) => (
             <li key={p.id} className="snap-start">
               <PocketCard inset pocket={p} balance={balances.get(p.id) ?? 0} />
@@ -249,7 +275,7 @@ function HomeView({ state }: { state: AppState }) {
         </ul>
       </Card>
 
-      <div className="grid gap-6 lg:col-span-12 lg:grid-cols-3">
+      <div className="grid gap-6 max-lg:order-5 lg:col-span-12 lg:grid-cols-2 lg:items-start">
         {budget && budgetSummary ? (
           <Link
             href={`/budgets/${budget.id}`}
@@ -318,35 +344,9 @@ function HomeView({ state }: { state: AppState }) {
             </ul>
           )}
         </Card>
-
-        <Card className="grid content-start gap-5 pb-6 md:pb-7">
-          <CardTitle icon={MoneyIcon} href="/stats" linkLabel="Statistics">
-            Expense summary
-          </CardTitle>
-          <p className="money-lg text-3xl font-bold text-expense md:text-4xl">{formatIDR(sum.expense)}</p>
-          {delta !== null ? (
-            <p
-              className={cn(
-                "flex items-center gap-1.5 text-sm font-semibold",
-                delta > 0 ? "text-expense" : "text-income",
-              )}
-            >
-              {delta > 0 ? <TrendUpIcon className="size-4" weight="bold" /> : <TrendDownIcon className="size-4" weight="bold" />}
-              {delta > 0 ? "+" : ""}
-              {Math.round(delta * 100)}%
-              <span className="font-medium text-muted-foreground">vs last {period}</span>
-            </p>
-          ) : (
-            <p className="text-sm text-muted-foreground">No spending last {period} to compare.</p>
-          )}
-          <div className="grid gap-6 border-t pt-5">
-            <CompareBar label={`Last ${period}`} value={prevSum.expense} max={Math.max(sum.expense, prevSum.expense)} muted />
-            <CompareBar label={`This ${period}`} value={sum.expense} max={Math.max(sum.expense, prevSum.expense)} />
-          </div>
-        </Card>
       </div>
 
-      <Card as="section" aria-labelledby="recent-title" className="grid gap-2 lg:col-span-12">
+      <Card as="section" aria-labelledby="recent-title" className="grid gap-2 max-lg:order-7 lg:col-span-12">
         <CardTitle id="recent-title" icon={ClockCounterClockwiseIcon} href="/activity" linkLabel="See all">
           Latest
         </CardTitle>

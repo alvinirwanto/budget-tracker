@@ -37,7 +37,8 @@ export function AccountCard() {
     <section aria-labelledby="account-title" className="md:col-span-2">
       <SectionTitle id="account-title">Account</SectionTitle>
       <Card className="grid gap-5">
-        <div className="flex items-center gap-4">
+        <div className="grid gap-5 md:flex md:items-center md:justify-between md:gap-8">
+        <div className="flex min-w-0 items-center gap-4">
           <span aria-hidden className="grid size-14 shrink-0 place-items-center rounded-full bg-primary text-xl font-bold text-primary-foreground">
             {initial}
           </span>
@@ -47,7 +48,7 @@ export function AccountCard() {
           </div>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-[repeat(auto-fit,minmax(9rem,1fr))] md:w-96 md:shrink-0">
           {canInstall && (
             <Button variant="outline" className="h-12 rounded-full font-semibold" onClick={install}>
               <DownloadSimpleIcon className="size-5" /> Install app
@@ -56,6 +57,7 @@ export function AccountCard() {
           <Button variant="outline" className="h-12 rounded-full font-semibold" disabled={busy} onClick={logout}>
             <SignOutIcon className="size-5" /> Log out
           </Button>
+        </div>
         </div>
 
         {legacy && (

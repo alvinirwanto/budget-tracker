@@ -31,7 +31,12 @@ export function DailyView({ state }: { state: AppState }) {
   const shift = (weeks: number) => setSelected(format(addDays(anchor, weeks * 7), ISO));
 
   return (
-    <div className="grid gap-5 lg:max-w-3xl">
+    <div className="grid gap-5 lg:grid-cols-12 lg:items-start lg:gap-6">
+      <div className="lg:sticky lg:top-28 lg:col-span-5">
+        {/* Same title row as the day list, so both cards start at the same height on desktop. */}
+        <div className="mb-4 hidden min-h-10 items-center lg:flex">
+          <h2 className="text-lg font-bold">This week</h2>
+        </div>
       <Card className="grid gap-4 md:p-6">
         <div className="flex items-center justify-between gap-2">
           <Button
@@ -88,8 +93,9 @@ export function DailyView({ state }: { state: AppState }) {
           })}
         </ToggleGroup>
       </Card>
+      </div>
 
-      <section aria-labelledby="day-title">
+      <section aria-labelledby="day-title" className="lg:col-span-7">
         <div className="mb-4 flex items-center justify-between gap-2">
           <h2 id="day-title" className="text-lg font-bold">
             {selected === today ? "Today" : formatDate(selected, "EEEE, d MMM")}

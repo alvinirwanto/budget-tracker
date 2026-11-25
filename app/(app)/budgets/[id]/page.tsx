@@ -77,7 +77,7 @@ export default function BudgetDetail({ params }: PageProps<"/budgets/[id]">) {
 
       <section
         aria-labelledby="remaining-title"
-        className="grid justify-items-center gap-7 py-2 text-center lg:col-span-5 lg:sticky lg:top-28"
+        className="grid justify-items-center gap-7 py-2 text-center lg:sticky lg:top-28 lg:col-span-5 lg:row-span-4"
       >
         <p className="flex items-center gap-2 rounded-full bg-muted px-5 py-3 text-sm font-semibold">
           <CalendarBlankIcon className="size-4" />

@@ -44,8 +44,9 @@ export default function PocketsPage() {
   const whole = shown.reduce((a, g) => a + g.sum, 0);
 
   return (
-    <div className="grid gap-6">
+    <div className="grid gap-6 lg:grid-cols-12 lg:items-start">
       <PageHeader
+        className="lg:col-span-12"
         title="Pockets"
         back="/profile"
         subtitle={<MoneyText>{`${formatIDR(total)} in total`}</MoneyText>}
@@ -58,7 +59,7 @@ export default function PocketsPage() {
           </Button>
         }
       />
-      <p className="max-w-prose text-sm text-muted-foreground">
+      <p className="max-w-prose text-sm text-muted-foreground lg:col-span-12">
         A pocket is wherever your money sits: wallet, bank, e-wallet, or something like gold. When you
         spend, you choose which pocket it comes out of.
       </p>
@@ -72,11 +73,13 @@ export default function PocketsPage() {
       ) : (
         <>
           {whole > 0 && (
-            <Card className="flex items-center gap-5 md:gap-8 md:p-6">
+            <Card className="flex items-center gap-5 md:gap-8 md:p-6 lg:sticky lg:top-28 lg:col-span-4 lg:flex-col lg:items-stretch lg:gap-6">
+              <div className="lg:mx-auto">
               <Donut
                 slices={shown.map((g) => ({ value: g.sum, color: KIND_COLORS[g.kind] }))}
                 label={shown.map((g) => `${POCKET_LABELS[g.kind]} ${Math.round((g.sum / whole) * 100)}%`).join(", ")}
               />
+              </div>
               <ul className="grid min-w-0 flex-1 gap-3">
                 {shown.map((g) => (
                   <li key={g.kind} className="flex items-center gap-2.5 text-sm">
@@ -88,10 +91,11 @@ export default function PocketsPage() {
               </ul>
             </Card>
           )}
+          <div className="grid gap-6 lg:col-span-8 lg:grid-cols-2 lg:items-start">
           {groups.map((g) => (
             <section key={g.kind} aria-labelledby={`kind-${g.kind}`}>
               <SectionTitle id={`kind-${g.kind}`}>{POCKET_LABELS[g.kind]}</SectionTitle>
-              <ul className="grid grid-cols-1 gap-3 min-[440px]:grid-cols-2 md:grid-cols-3 md:gap-4 lg:grid-cols-4">
+              <ul className="grid grid-cols-1 gap-3 min-[440px]:grid-cols-2 md:grid-cols-3 md:gap-4 lg:grid-cols-1">
                 {g.pockets.map((p) => (
                   <li key={p.id}>
                     <button
@@ -107,6 +111,7 @@ export default function PocketsPage() {
               </ul>
             </section>
           ))}
+          </div>
         </>
       )}
 

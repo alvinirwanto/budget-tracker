@@ -20,8 +20,20 @@ import { Segmented } from "@/components/segmented";
 import { AccountCard } from "@/components/account-card";
 import { DataTransfer } from "@/components/data-transfer";
 import { actions, useAppState } from "@/lib/store";
-import { ACCENTS, isCustom, setAccent, setScheme, toHex, useAccent, useScheme, type Scheme } from "@/lib/theme";
-import { CheckIcon, PlusIcon } from "@phosphor-icons/react";
+import {
+  ACCENTS,
+  addSavedColor,
+  isCustom,
+  removeSavedColor,
+  setAccent,
+  setScheme,
+  toHex,
+  useAccent,
+  useSavedColors,
+  useScheme,
+  type Scheme,
+} from "@/lib/theme";
+import { CheckIcon, PlusIcon, XIcon } from "@phosphor-icons/react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
@@ -34,7 +46,9 @@ const SCHEMES: { value: Scheme; label: string; Icon: Icon }[] = [
 export default function ProfilePage() {
   const scheme = useScheme();
   const accent = useAccent();
-  const custom = isCustom(accent);
+  const savedColors = useSavedColors();
+  // A custom color in use that is not in the saved list yet.
+  const custom = isCustom(accent) && !savedColors.includes(accent);
   const [typeColor, setTypeColor] = useState(false);
   const [hex, setHex] = useState(() => (isCustom(accent) ? accent : ""));
   const state = useAppState();
@@ -86,6 +100,41 @@ export default function ProfilePage() {
                 {a.label}
               </button>
             ))}
+            {savedColors.map((c) => (
+              <div key={c} className="relative grid justify-items-center">
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={accent === c}
+                  aria-label={`Color ${c}`}
+                  onClick={() => {
+                    setTypeColor(false);
+                    setAccent(c);
+                  }}
+                  className="grid justify-items-center gap-1.5 rounded-lg py-1 text-[11px] font-semibold focus-visible:outline-3 focus-visible:outline-ring"
+                >
+                  <span
+                    aria-hidden
+                    style={{ backgroundColor: c }}
+                    className={cn(
+                      "grid size-11 place-items-center rounded-full ring-offset-2 ring-offset-card transition-shadow",
+                      accent === c && "ring-2 ring-foreground",
+                    )}
+                  >
+                    {accent === c && <CheckIcon className="size-5 text-white mix-blend-difference" weight="bold" />}
+                  </span>
+                  {c}
+                </button>
+                <button
+                  type="button"
+                  aria-label={`Remove color ${c}`}
+                  onClick={() => removeSavedColor(c)}
+                  className="absolute top-0 right-1 grid size-5 place-items-center rounded-full bg-foreground text-background shadow-sm focus-visible:outline-3 focus-visible:outline-ring"
+                >
+                  <XIcon className="size-3" weight="bold" />
+                </button>
+              </div>
+            ))}
             <button
               type="button"
               role="radio"
@@ -132,6 +181,21 @@ export default function ProfilePage() {
                   if (ok) setAccent(ok);
                 }}
               />
+              <Button
+                type="button"
+                className="h-11 shrink-0 rounded-full px-4 font-bold"
+                disabled={!toHex(hex || (custom ? accent : "")) || savedColors.includes(toHex(hex) ?? "")}
+                onClick={() => {
+                  const ok = toHex(hex || accent);
+                  if (!ok) return;
+                  addSavedColor(ok);
+                  setAccent(ok);
+                  setTypeColor(false);
+                  setHex("");
+                }}
+              >
+                Save
+              </Button>
             </div>
           )}
         </Card>
@@ -170,13 +234,13 @@ export default function ProfilePage() {
         </Card>
       </section>
 
-      <section aria-labelledby="data-title">
+      <section aria-labelledby="data-title" className="md:col-span-2">
         <SectionTitle id="data-title">Your data</SectionTitle>
-        <Card className="grid gap-3">
+        <Card className="grid gap-3 md:grid-cols-[1fr_auto] md:items-center md:gap-8">
           <p className="text-sm text-muted-foreground">
             Your data is saved to your account and follows you to any device you log in on.
           </p>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-2 md:w-96">
             <Button variant="outline" className="h-11 rounded-full" onClick={() => setConfirm("sample")}>
               Load sample data
             </Button>

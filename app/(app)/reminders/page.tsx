@@ -46,7 +46,7 @@ function View({ state, initialTab }: { state: AppState; initialTab: "alerts" | "
   const seen = new Set(state.seen);
 
   return (
-    <div className="grid max-w-3xl gap-6">
+    <div className="grid gap-6">
       <PageHeader
         title="Reminders"
         back="history"
@@ -56,7 +56,7 @@ function View({ state, initialTab }: { state: AppState; initialTab: "alerts" | "
             label="Reminders view"
             value={tab}
             onChange={setTab}
-            className="bg-[light-dark(#e3e6ed,#2b3240)]"
+            className="bg-[light-dark(#e3e6ed,#2b3240)] lg:max-w-sm"
             options={[
               { value: "alerts", label: unread ? `Notifications (${unread})` : "Notifications" },
               { value: "bills", label: "Bills" },
@@ -112,7 +112,7 @@ function Alerts({
           <CheckIcon className="size-4" weight="bold" /> Mark all as read
         </Button>
       </div>
-      <ul className="grid gap-3">
+      <ul className="grid gap-3 lg:grid-cols-2">
         {notices.map((n) => {
           const isNew = !seen.has(n.key);
           const Icon = n.level === "danger" ? WarningIcon : BellRingingIcon;
@@ -190,7 +190,7 @@ function Bills({ state }: { state: AppState }) {
           }
         />
       ) : (
-        <ul className="grid gap-4">
+        <ul className="grid gap-4 lg:grid-cols-2">
           {sorted.map((b) => {
             const st = billStatus(b);
             return (

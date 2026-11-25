@@ -72,8 +72,9 @@ function StatsView({ state }: { state: AppState }) {
   const tickEvery = series.length > 28 ? 10 : 7;
 
   return (
-    <div className="grid max-w-3xl grid-cols-[minmax(0,1fr)] gap-6">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-12 lg:items-start">
       <PageHeader
+        className="lg:col-span-12"
         title="Statistics"
         subtitle="How your month is going"
         tabs={
@@ -124,7 +125,7 @@ function StatsView({ state }: { state: AppState }) {
         }
       />
 
-      <Card className="grid gap-5 md:p-6">
+      <Card className="grid gap-5 md:p-6 lg:col-span-7">
         <div>
           <p className="text-sm text-muted-foreground">Net balance</p>
           <p className={cn("money-lg mt-1.5 text-5xl font-bold", net < 0 && "text-expense")}>
@@ -155,6 +156,7 @@ function StatsView({ state }: { state: AppState }) {
         </p>
       </Card>
 
+      <div className="grid content-start gap-6 lg:col-span-5">
       <div className="grid grid-cols-2 gap-4">
         <Card className="grid gap-5">
           <span aria-hidden className="grid size-11 place-items-center rounded-full bg-income text-white">
@@ -202,6 +204,7 @@ function StatsView({ state }: { state: AppState }) {
           </ul>
         )}
       </Card>
+      </div>
     </div>
   );
 }

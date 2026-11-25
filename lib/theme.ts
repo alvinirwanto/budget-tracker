@@ -168,3 +168,52 @@ export function useAccent(): Accent {
     () => "pink",
   );
 }
+
+/* Colors you added yourself. They stay in the picker until you remove them. */
+const SAVED_KEY = "accent-saved";
+const savedListeners = new Set<() => void>();
+const NONE: string[] = [];
+let saved: string[] | null = null;
+
+function readSaved(): string[] {
+  try {
+    const raw = JSON.parse(localStorage.getItem(SAVED_KEY) ?? "[]");
+    return Array.isArray(raw) ? raw.map((v) => toHex(String(v))).filter((v): v is string => !!v).slice(0, 12) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeSaved(next: string[]) {
+  saved = next;
+  try {
+    localStorage.setItem(SAVED_KEY, JSON.stringify(next));
+  } catch {
+    /* still kept for this visit */
+  }
+  savedListeners.forEach((l) => l());
+}
+
+export function addSavedColor(hex: string) {
+  const h = toHex(hex);
+  if (!h) return;
+  const list = saved ?? readSaved();
+  if (!list.includes(h)) writeSaved([...list, h].slice(-12));
+}
+
+export function removeSavedColor(hex: string) {
+  writeSaved((saved ?? readSaved()).filter((c) => c !== hex));
+  // Removing the color that is in use goes back to the default.
+  if (accent === hex) setAccent("pink");
+}
+
+export function useSavedColors(): string[] {
+  return useSyncExternalStore(
+    (cb) => {
+      savedListeners.add(cb);
+      return () => void savedListeners.delete(cb);
+    },
+    () => (saved ??= readSaved()),
+    () => NONE,
+  );
+}
