@@ -24,8 +24,9 @@ export function PocketCard({
       className={cn(
         "grid w-64 shrink-0 gap-4 p-4 md:p-5",
         // A card inside a card gets a smaller corner than the one around it.
-        inset ? "rounded-lg bg-muted" : "rounded-2xl bg-card shadow-card dark:border",
-        isAsset && "bg-amber-400/10 ring-1 ring-amber-400/40",
+        inset ? "rounded-lg border bg-muted" : "rounded-2xl bg-card shadow-card dark:border",
+        // A real border (not a ring), so a scroller can never clip it.
+        isAsset && "border border-amber-400/40 bg-amber-400/10",
         className,
       )}
     >
