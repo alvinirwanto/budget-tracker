@@ -6,7 +6,9 @@ import {
   BellIcon,
   CaretRightIcon,
   CircleHalfIcon,
+  FlaskIcon,
   MoonIcon,
+  TrashIcon,
   SunIcon,
   TagIcon,
   WalletIcon,
@@ -243,10 +245,10 @@ export default function ProfilePage() {
           </p>
           <div className="grid grid-cols-2 gap-2 md:w-96">
             <Button variant="outline" className="h-11 rounded-full" onClick={() => setConfirm("sample")}>
-              Load sample data
+              <FlaskIcon className="size-5" /> Load sample data
             </Button>
             <Button variant="destructive" className="h-11 rounded-full" onClick={() => setConfirm("reset")}>
-              Erase everything
+              <TrashIcon className="size-5" /> Erase everything
             </Button>
           </div>
         </Card>

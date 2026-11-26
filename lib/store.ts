@@ -6,6 +6,7 @@ import { addDays, addMonths, format, parseISO, startOfMonth, subDays } from "dat
 import { api, ApiError } from "./api";
 import { DEFAULT_CATEGORIES, DEFAULT_POCKETS } from "./defaults";
 import { ISO } from "./format";
+import { applyServerPrefs, type Prefs } from "./prefs";
 import type { AppState, Bill, Budget, Category, Pocket, Transaction } from "./types";
 
 /** The browser-only save from before accounts existed. Used once, to move that data into an account. */
@@ -54,7 +55,8 @@ const goToLogin = () => {
 /** Load everything for the signed-in user from the server. */
 async function refresh() {
   try {
-    const data = await api<Data & { user: AppState["user"] }>("GET", "/api/data");
+    const { prefs, ...data } = await api<Data & { user: AppState["user"]; prefs?: Prefs }>("GET", "/api/data");
+    applyServerPrefs(prefs, data.user?.email ?? "me");
     set({ ...EMPTY, ...data, hydrated: true });
   } catch (err) {
     if (err instanceof ApiError && err.status === 401) return goToLogin();

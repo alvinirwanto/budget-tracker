@@ -212,7 +212,7 @@ export function BarChart({
                     aria-pressed={picked?.key === d.key}
                     aria-label={`${titleOf(d.key)}: income ${formatIDR(d.income)}, expense ${formatIDR(d.expense)}`}
                     className={cn(
-                      "relative flex h-full min-w-0 flex-1 items-end justify-center rounded-xl transition-colors focus-visible:outline-3 focus-visible:outline-ring",
+                      "relative flex h-full min-w-0 flex-1 items-end justify-center rounded-none transition-colors focus-visible:outline-3 focus-visible:outline-ring",
                       picked?.key === d.key && "bg-foreground/[0.06]",
                     )}
                   >

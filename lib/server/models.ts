@@ -24,6 +24,8 @@ const userSchema = new Schema(
     passwordHash: { type: String, required: true },
     /** Notification keys this user has already seen. */
     seen: { type: [String], default: [] },
+    /** Accent color and the icons/colors the user saved in the pickers. */
+    prefs: { type: Schema.Types.Mixed, default: {} },
   },
   { timestamps: true, versionKey: false },
 );

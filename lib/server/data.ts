@@ -14,6 +14,7 @@ export async function loadAll(userId: string) {
   const out: Record<string, unknown> = {
     user: { name: user.name, email: user.email },
     seen: user.seen ?? [],
+    prefs: user.prefs ?? {},
   };
   NAMES.forEach((n, i) => {
     out[n] = (lists[i] as Record<string, unknown>[]).map(publicDoc);

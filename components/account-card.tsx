@@ -54,7 +54,12 @@ export function AccountCard() {
               <DownloadSimpleIcon className="size-5" /> Install app
             </Button>
           )}
-          <Button variant="outline" className="h-12 rounded-full font-semibold" disabled={busy} onClick={logout}>
+          <Button
+            variant="destructive"
+            className="h-12 rounded-full font-semibold"
+            disabled={busy}
+            onClick={logout}
+          >
             <SignOutIcon className="size-5" /> Log out
           </Button>
         </div>

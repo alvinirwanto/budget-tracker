@@ -1,6 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import { onPrefsApplied, queuePrefsPush } from "./prefs";
 
 /** light is the default. system follows the computer. */
 export type Scheme = "system" | "light" | "dark";
@@ -155,7 +156,14 @@ export function setAccent(next: Accent) {
   }
   paint(next);
   accentListeners.forEach((l) => l());
+  queuePrefsPush();
 }
+
+onPrefsApplied(() => {
+  accent = readAccent();
+  if (typeof document !== "undefined") paint(accent);
+  accentListeners.forEach((l) => l());
+});
 
 export function useAccent(): Accent {
   return useSyncExternalStore(
@@ -178,7 +186,7 @@ let saved: string[] | null = null;
 function readSaved(): string[] {
   try {
     const raw = JSON.parse(localStorage.getItem(SAVED_KEY) ?? "[]");
-    return Array.isArray(raw) ? raw.map((v) => toHex(String(v))).filter((v): v is string => !!v).slice(0, 12) : [];
+    return Array.isArray(raw) ? raw.map((v) => toHex(String(v))).filter((v): v is string => !!v) : [];
   } catch {
     return [];
   }
@@ -192,13 +200,19 @@ function writeSaved(next: string[]) {
     /* still kept for this visit */
   }
   savedListeners.forEach((l) => l());
+  queuePrefsPush();
 }
+
+onPrefsApplied(() => {
+  saved = null;
+  savedListeners.forEach((l) => l());
+});
 
 export function addSavedColor(hex: string) {
   const h = toHex(hex);
   if (!h) return;
   const list = saved ?? readSaved();
-  if (!list.includes(h)) writeSaved([...list, h].slice(-12));
+  if (!list.includes(h)) writeSaved([...list, h]);
 }
 
 export function removeSavedColor(hex: string) {
