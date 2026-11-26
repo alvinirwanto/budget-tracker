@@ -1,10 +1,12 @@
 "use client";
 
+import { useLayoutEffect, useRef, useState } from "react";
+import { format, parseISO } from "date-fns";
 import type { Bucket } from "@/lib/stats";
 import { CATEGORY_ICONS, categoryColor } from "@/lib/icons";
 import { useCustomIcon } from "@/lib/phosphor";
 import type { Category } from "@/lib/types";
-import { formatCompact } from "@/lib/format";
+import { formatCompact, formatIDR } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 export function CategoryBadge({
@@ -130,8 +132,22 @@ function niceMax(v: number) {
   return nice * exp;
 }
 
-/** Income (green) and spending (red) bars on a shared axis with grid lines. */
-export function BarChart({ data, labelEvery = 1 }: { data: Bucket[]; labelEvery?: number }) {
+/**
+ * Income (green) and spending (red) bars side by side on a shared axis with grid lines.
+ * With `visible`, only that many slots fit on screen at once and the rest scrolls sideways;
+ * the number axis stays put. `focus` is the slot to bring into view first.
+ */
+export function BarChart({
+  data,
+  labelEvery = 1,
+  visible,
+  focus = 0,
+}: {
+  data: Bucket[];
+  labelEvery?: number;
+  visible?: number;
+  focus?: number;
+}) {
   // Axis follows spending; a big income day is capped at the top so spending stays readable.
   const top = niceMax(Math.max(...data.map((d) => d.expense), 0));
   const ticks = [1, 0.75, 0.5, 0.25, 0].map((f) => top * f);
@@ -139,56 +155,116 @@ export function BarChart({ data, labelEvery = 1 }: { data: Bucket[]; labelEvery?
     .filter((d) => d.income || d.expense)
     .map((d) => `${d.label}: spent ${formatCompact(d.expense)}, income ${formatCompact(d.income)}`)
     .join("; ");
-  const dense = data.length > 12;
+  // Tap a slot to see what came in and went out in it.
+  const [pickedKey, setPickedKey] = useState<string | null>(null);
+  const picked = data.find((d) => d.key === pickedKey) ?? null;
+  const titleOf = (key: string) =>
+    key.length === 7 ? format(parseISO(`${key}-01`), "MMMM yyyy") : format(parseISO(key), "EEEE, d MMM yyyy");
+  const scrolls = !!visible && data.length > visible;
+  const dense = !scrolls && data.length > 12;
+  const every = scrolls ? 1 : labelEvery;
+
+  // Start with the focused slot near the right edge of the window.
+  const scroller = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const el = scroller.current;
+    if (!el || !scrolls) return;
+    const slot = el.scrollWidth / data.length;
+    el.scrollLeft = Math.max(0, (focus + 1) * slot - el.clientWidth + slot);
+  }, [scrolls, data.length, focus]);
+
   return (
     <figure className="m-0">
       <figcaption className="sr-only">Income and spending chart. {summary || "No data yet."}</figcaption>
-      <div className="flex gap-2" aria-hidden>
-        <div className="flex h-80 flex-col justify-between pb-0 text-[11px] leading-none text-muted-foreground md:h-[26rem]">
-          {ticks.map((t) => (
-            <span key={t} className="money -translate-y-1/2 first:translate-y-0 last:translate-y-0">
-              {formatCompact(t)}
-            </span>
-          ))}
-        </div>
-        <div className="relative min-w-0 flex-1">
-          <div className="absolute inset-0 flex flex-col justify-between">
+      <div className="flex gap-2">
+        <div aria-hidden className="shrink-0 text-[11px] leading-none text-muted-foreground">
+          <div className="flex h-80 flex-col justify-between md:h-[26rem]">
             {ticks.map((t) => (
-              <div key={t} className="border-t border-foreground/10" />
+              <span key={t} className="money -translate-y-1/2 first:translate-y-0 last:translate-y-0">
+                {formatCompact(t)}
+              </span>
             ))}
           </div>
-          <div className="relative flex h-80 items-end justify-between gap-[2px] md:h-[26rem] md:gap-1">
-            {data.map((d) => (
-              <div key={d.key} className="relative flex h-full min-w-0 flex-1 items-end justify-center">
-                <div
-                  className={cn(
-                    "relative flex h-full items-end justify-center",
-                    dense ? "w-full" : "w-full max-w-7",
-                  )}
-                >
-                  <div
-                    className="absolute inset-x-0 bottom-0 rounded-full bg-income transition-[height] duration-500 motion-reduce:transition-none"
-                    style={{ height: `${Math.min(1, d.income / top) * 100}%`, minHeight: d.income ? 6 : 0 }}
-                  />
-                  <div
-                    className="relative w-full rounded-full bg-expense transition-[height] duration-500 motion-reduce:transition-none"
-                    style={{ height: `${Math.min(1, d.expense / top) * 100}%`, minHeight: d.expense ? 6 : 0 }}
-                  />
-                </div>
+          <span className="invisible mt-2 block">0</span>
+        </div>
+        <div
+          ref={scroller}
+          className={cn("min-w-0 flex-1", scrolls && "overflow-x-auto overscroll-x-contain [scrollbar-width:none]")}
+        >
+          <div style={scrolls ? { width: `${(data.length / visible!) * 100}%` } : undefined}>
+            <div className="relative">
+              <div className="absolute inset-0 flex flex-col justify-between">
+                {ticks.map((t) => (
+                  <div key={t} className="border-t border-foreground/10" />
+                ))}
               </div>
-            ))}
+              <div
+                className={cn(
+                  "relative flex h-80 items-end justify-between md:h-[26rem]",
+                  scrolls ? "gap-0" : "gap-[2px] md:gap-1",
+                )}
+              >
+                {data.map((d) => (
+                  <button
+                    type="button"
+                    key={d.key}
+                    onClick={() => setPickedKey((k) => (k === d.key ? null : d.key))}
+                    aria-pressed={picked?.key === d.key}
+                    aria-label={`${titleOf(d.key)}: income ${formatIDR(d.income)}, expense ${formatIDR(d.expense)}`}
+                    className={cn(
+                      "relative flex h-full min-w-0 flex-1 items-end justify-center rounded-xl transition-colors focus-visible:outline-3 focus-visible:outline-ring",
+                      picked?.key === d.key && "bg-foreground/[0.06]",
+                    )}
+                  >
+                    {/* Income and spending side by side. */}
+                    <div
+                      className={cn(
+                        "relative flex h-full items-end justify-center gap-[2px]",
+                        dense ? "w-full" : scrolls ? "w-[68%] max-w-10" : "w-full max-w-9",
+                      )}
+                    >
+                      <div
+                        className="min-w-0 flex-1 rounded-full bg-income transition-[height] duration-500 motion-reduce:transition-none"
+                        style={{ height: `${Math.min(1, d.income / top) * 100}%`, minHeight: d.income ? 6 : 0 }}
+                      />
+                      <div
+                        className="min-w-0 flex-1 rounded-full bg-expense transition-[height] duration-500 motion-reduce:transition-none"
+                        style={{ height: `${Math.min(1, d.expense / top) * 100}%`, minHeight: d.expense ? 6 : 0 }}
+                      />
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div aria-hidden className="mt-2 flex text-[11px] leading-none text-muted-foreground">
+              {data.map((d, i) => (
+                <span key={d.key} className="flex min-w-0 flex-1 justify-center whitespace-nowrap">
+                  {i % every === 0 ? d.label : ""}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       </div>
-      <div className="mt-2 flex gap-2 text-[11px] text-muted-foreground" aria-hidden>
-        <span className="invisible">{formatCompact(top)}</span>
-        <div className="flex min-w-0 flex-1 justify-between gap-[3px]">
-          {data.map((d, i) => (
-            <span key={d.key} className="flex min-w-0 flex-1 justify-center whitespace-nowrap">
-              {i % labelEvery === 0 ? d.label : ""}
-            </span>
-          ))}
-        </div>
+
+      <div role="status" aria-live="polite" className="mt-4">
+        {picked ? (
+          <div className="grid gap-2 rounded-lg bg-muted p-3.5">
+            <p className="text-sm font-semibold">{titleOf(picked.key)}</p>
+            <div className="flex items-center gap-2 text-sm">
+              <i aria-hidden className="size-2.5 shrink-0 rounded-full bg-income" />
+              <span className="text-muted-foreground">Income</span>
+              <span className="money ml-auto font-bold text-income">{formatIDR(picked.income)}</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <i aria-hidden className="size-2.5 shrink-0 rounded-full bg-expense" />
+              <span className="text-muted-foreground">Expense</span>
+              <span className="money ml-auto font-bold text-expense">{formatIDR(picked.expense)}</span>
+            </div>
+          </div>
+        ) : (
+          <p className="text-center text-sm text-muted-foreground">Tap a bar to see the details</p>
+        )}
       </div>
     </figure>
   );

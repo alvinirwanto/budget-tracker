@@ -72,6 +72,11 @@ function HomeView({ state }: { state: AppState }) {
   );
   const budget = activeBudget(state.budgets);
   const budgetSummary = budget ? summarizeBudget(budget, state.transactions) : undefined;
+  // What is left, spread over the days that are left (same as on the budget page).
+  const budgetPerDay =
+    budgetSummary && budgetSummary.daysLeft > 0 && budgetSummary.remaining > 0
+      ? Math.floor(budgetSummary.remaining / budgetSummary.daysLeft)
+      : 0;
   const recent = useMemo(
     () => [...state.transactions].sort(sortByDateDesc).slice(0, 6),
     [state.transactions],
@@ -194,7 +199,11 @@ function HomeView({ state }: { state: AppState }) {
           />
 
           <div className="mt-4 md:mt-5">
-            <BarChart data={data} labelEvery={period === "month" ? 5 : 1} />
+            <BarChart
+              data={data}
+              visible={period === "month" ? 10 : period === "year" ? 8 : undefined}
+              focus={isCurrent ? (period === "month" ? new Date().getDate() - 1 : period === "year" ? new Date().getMonth() : 0) : 0}
+            />
           </div>
 
           <p className="flex items-center justify-center gap-5 text-sm font-medium">
@@ -309,6 +318,11 @@ function HomeView({ state }: { state: AppState }) {
                     {`of ${formatIDR(budget.total)} · ${budgetSummary.daysLeft} day${budgetSummary.daysLeft === 1 ? "" : "s"} left`}
                   </MoneyText>
                 </p>
+                {budgetPerDay > 0 && (
+                  <p data-fit className="text-sm leading-relaxed text-muted-foreground">
+                    <MoneyText>{`about ${formatIDR(budgetPerDay)} a day`}</MoneyText>
+                  </p>
+                )}
               </div>
               <CaretRightIcon className="size-5 shrink-0 text-muted-foreground" />
             </div>
